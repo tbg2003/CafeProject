@@ -6,16 +6,18 @@ import java.time.LocalDate
 
 case class DrinksLoyaltyCard(customerStamps:Option[List[LocalDate]]) extends LoyaltyCard{
 
-
-  private var stamps:List[LocalDate] = List()
+  private var cardStamps:List[LocalDate] = customerStamps match {
+    case Some(stampList) => stampList
+    case None => List()
+  }
 
   def addStamp():Either[POSError, List[LocalDate]] = {
     val now:LocalDate = LocalDate.now()
-    if (stamps.contains(now))Left(POSError.InvalidStamp("Already received a stamp today"))
-    else Right(stamps :+ now)
+    if (cardStamps.contains(now))Left(POSError.InvalidStamp("Already received a stamp today"))
+    else Right(cardStamps :+ now)
   }
   def checkEnoughStamps():Either[POSError, Boolean] ={
-    if(stamps.length % 10 == 0) Right(true)
+    if(cardStamps.length % 10 == 0) Right(true)
     else Left(POSError.InsufficientStamps(s"Not enough stamps, you need 10"))
   }
 
