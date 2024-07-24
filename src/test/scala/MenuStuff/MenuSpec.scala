@@ -1,7 +1,9 @@
+package MenuStuff
 
 
 
-import MenuStuff.{ItemType, Menu, MenuItem}
+
+import Utils.POSError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -27,28 +29,27 @@ class MenuSpec extends AnyWordSpec with Matchers{
     val newSpecialItem:MenuItem = MenuItem("New Special", 25.00, ItemType.Special)
     "return a Left" when{
       "Item is not special" in {
-        assert(menu.addSpecialItem(newNotSpecialItem) == Left(POSError.InvalidItemType))
+        menu.addSpecialItem(newNotSpecialItem) shouldBe Left(POSError.InvalidItemType("New Not Special is not a special item"))
       }
 
     }
     "return a Right" when{
       "Item is special" in {
-        assert(menu.addSpecialItem(newSpecialItem) == Right(???))
+        menu.addSpecialItem(newSpecialItem) shouldBe Right(List(ColdFood, HotFood, Special, ColdDrink, HotDrink, newSpecialItem))
       }
     }
   }
 
   "removeSpecialItem"  should {
     val newNotSpecialItem: MenuItem = MenuItem("New Not Special", 25.00, ItemType.HotFood)
-    val newSpecialItem:MenuItem = MenuItem("New Special", 25.00, ItemType.Special)
     "return a Left" when{
       "Item is not special" in {
-        assert(menu.removeSpecialItem(newNotSpecialItem) == Left(POSError.InvalidItemType))
+        menu.removeSpecialItem(newNotSpecialItem) shouldBe Left(POSError.InvalidItemType("New Not Special is not a special item"))
       }
     }
     "return a Right" when{
       "Item is special" in {
-        assert(menu.removeSpecialItem(newSpecialItem) == Right(???))
+        menu.removeSpecialItem(Special) shouldBe Right(List(ColdFood, HotFood, ColdDrink, HotDrink))
       }
     }
   }
