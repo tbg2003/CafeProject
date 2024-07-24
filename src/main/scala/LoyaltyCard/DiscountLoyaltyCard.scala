@@ -10,6 +10,6 @@ case class DiscountLoyaltyCard(customerStars:Option[Int], customerStamps:Option[
   def addStar(orderPrice:Double):Either[POSError, Int] = {
     ???
   }
-  def getDiscount(orderPrice:Double):Double = {}
-  ???
+  def getDiscount(orderPrice:Double):Double = {???}
+
 }
