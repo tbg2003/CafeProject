@@ -14,7 +14,10 @@ case class DrinksLoyaltyCard(customerStamps:Option[List[LocalDate]]) extends Loy
   def addStamp():Either[POSError, List[LocalDate]] = {
     val now:LocalDate = LocalDate.now()
     if (cardStamps.contains(now))Left(POSError.InvalidStamp("Already received a stamp today"))
-    else Right(cardStamps :+ now)
+    else {
+      cardStamps = cardStamps :+ now
+      Right(cardStamps)
+    }
   }
   def checkEnoughStamps():Either[POSError, Boolean] ={
     if(cardStamps.length % 10 == 0) Right(true)

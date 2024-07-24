@@ -33,8 +33,15 @@ class DrinksLoyaltyCardSpec extends AnyWordSpec with Matchers{
         val loyaltyCard:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardTodaysDate))
         loyaltyCard.addStamp() shouldBe Left(POSError.InvalidStamp("Already received a stamp today"))
       }
+      "AStamped twice one day" in{
+        val cardTodaysDate:List[LocalDate] = List(date1, date2, date3, date4, date5)
+        val loyaltyCard:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardTodaysDate))
+        loyaltyCard.addStamp()
+        loyaltyCard.addStamp() shouldBe Left(POSError.InvalidStamp("Already received a stamp today"))
+      }
     }
   }
-  "checkEnoughStamps"
+  "checkEnoughStamps" should {
+  }
   "getFreeDrink"
 }
