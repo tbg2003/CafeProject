@@ -1,4 +1,4 @@
-package Menu
+package MenuStuff
 
 case class Menu(
                  menuItems: List[MenuItem]
