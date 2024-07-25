@@ -135,32 +135,32 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     "return Left" when{
       "the age is less than 18" in {
         val customer = Customer(3, "John Doe", invalidAge, validTotalSpend150, totalPurchasesOver5)
-        customer.applyForDrinksLoyaltyCard() shouldBe  Left(InvalidAge("Customer is too young"))
+        customer.applyForDiscountLoyaltyCard() shouldBe  Left(InvalidAge("Customer is too young"))
       }
     }
     "return Left" when{
-      "the customer already has  LoyaltyCard" in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+      "the customer already have a  LoyaltyCard" in {
+        val customer = Customer(4, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
         customer.setLoyaltyCard(Some(fourStampDiscountLoyaltyCard))
-        customer.applyForDrinksLoyaltyCard() shouldBe  Left(AlreadyHasCard("You already have a loyalty card"))
+        customer.applyForDiscountLoyaltyCard() shouldBe  Left(AlreadyHasCard("You already have a loyalty card"))
       }
     }
     "return Left" when{
       "the minimum purchases is less than 5" in {
         val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesUnder5)
-        customer.applyForDrinksLoyaltyCard() shouldBe  Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
+        customer.applyForDiscountLoyaltyCard() shouldBe  Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
       }
     }
     "return Left" when{
-      "the minimum purchases is less than 5" in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesUnder5)
-        customer.applyForDrinksLoyaltyCard() shouldBe  Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
+      "the minimum spent is less than 150" in {
+        val customer = Customer(3, "John Doe", validAge, invalidTotalSpend, totalPurchasesUnder5)
+        customer.applyForDiscountLoyaltyCard() shouldBe  Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
       }
     }
     "return Right" when{
-      "the customer is of valid age, has no loyalty card and has made minimum purchases " in {
+      "the customer is of valid age, has no loyalty card and has made minimum purchases of 5, has " +
+        "spent more than or equals to 150 " in {
         val customer = Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
-        //customer.setLoyaltyCard()
         customer.applyForDrinksLoyaltyCard() shouldBe  Right(DrinksLoyaltyCard(None))
       }
     }
