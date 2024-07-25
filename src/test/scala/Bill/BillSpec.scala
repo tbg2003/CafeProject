@@ -195,26 +195,6 @@ class BillSpec extends AnyWordSpec with Matchers{
 
 
   "getBillTotal" should {
-    // LoyaltyCards
-    // Discount
-    val emptyStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List()))
-    val fourStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4)))
-    val twoStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2)))
-    val fiveStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
-    val sixStampDiscountLoyaltyCardWithTodayDate: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, today)))
-    val sevenStampedDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7)))
-    val eightStampedDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7, date8)))
-    val todayStampedDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, today)))
-    // Drinks
-    val emptyStampDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List()))
-    val fourStampDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4)))
-    val twoStampDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2)))
-    val fiveStampDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
-    val eightStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7, date8)))
-    val nineStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7,date8, date9)))
-    val todayStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, today)))
-
-    //
     val ColdFood10 :MenuItem = MenuItem("Cold Food",10.00, ItemType.ColdFood)
     val HotFood10 :MenuItem = MenuItem("Hot Food", 10.00, ItemType.HotFood)
     val Special20 :MenuItem = MenuItem("Special", 20.00, ItemType.Special)
@@ -232,6 +212,7 @@ class BillSpec extends AnyWordSpec with Matchers{
 
     "reduce bill by cost of cheapest drink" when {
       "customer has valid drinks loyalty card and ordered drinks" in {
+        val nineStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7,date8, date9)))
         val billDrinksLoyalty: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(nineStampedDrinksLoyaltyCard), extraTip = None)
         billDrinksLoyalty.getBillTotal shouldBe 60.0
       }
