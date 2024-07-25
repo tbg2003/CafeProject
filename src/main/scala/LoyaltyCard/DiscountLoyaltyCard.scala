@@ -18,9 +18,9 @@ case class DiscountLoyaltyCard(customerStars: Option[List[LocalDate]]) extends L
 
 
   def addStar(orderPrice: Double): Either[POSError, String] = {
-    if (orderPrice >20){
-      if(customerStars.contains(Some(LocalDate.now))){
-        Left(InvalidStamp("Stars Already Added"))
+    if (orderPrice >=20){
+       if(customerStars.contains(Some(LocalDate.now))){
+        Left(InvalidStamp("Stars Already Added Stamped today"))
       }
       else if (currentCustomerStars.length >= maxStars) Left(InvalidStamp("No more stars can be added"))
       else{
