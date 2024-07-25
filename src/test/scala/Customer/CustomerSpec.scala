@@ -4,7 +4,7 @@ package Customer
 import LoyaltyCard.DiscountLoyaltyCard
 import LoyaltyCard.LoyaltyCardType.DrinksLoyalty
 import Utils.POSError
-import Utils.POSError.InvalidMinSpendTotal
+import Utils.POSError.{AlreadyHasCard, InvalidMinSpendTotal}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -56,7 +56,21 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  // not implemented
+  "hasLoyaltyCard" should {
+    "return left" when {
+      "when customer has loyalty card" in {
+        val customer:Customer = Customer(1, "John Doe", 18, loyaltyCard = Some(emptyStampDiscountLoyaltyCard))
+        customer.hasLoyaltyCard() shouldBe Left(AlreadyHasCard("You already have a loyalty card"))
+      }
+    }
+    "return right" when {
+      "when customer has no loyalty card" in {
+        val customer:Customer = Customer(1, "John Doe", 18)
+        customer.hasLoyaltyCard() shouldBe Right(true)
+      }
+    }
+  }
+
   "isValidAge" should {
     "return a Left" when{
       "customer's age doesn't meet valid age requirement" in {
@@ -116,10 +130,8 @@ class CustomerSpec extends AnyWordSpec with Matchers {
  applyForLoyaltyCard
  setLoyaltyCard
  applyForLoyaltyCard
- applyForDrinksLoyaltyCard
  applyForDiscountLoyaltyCard
  hasLoyaltyCard
- hasSpentMinTotal
  removeCurrentLoyaltyCard
 
   */
