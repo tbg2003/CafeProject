@@ -238,12 +238,14 @@ class BillSpec extends AnyWordSpec with Matchers{
     }
     "reduce bill by percentage off non special items" when {
       "customer has valid discount card" in {
+        val fiveStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
         val billDiscountLoyalty: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
         billDiscountLoyalty.getBillTotal shouldBe 40.50
       }
     }
     "reduce second bill (non special items) by 2% more after spending £20 on first bill" when {
       "customer has valid discount card with less that 8 stars" in {
+        val fiveStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
         val billOneTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
         val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
         billOneTotal45.getBillTotal shouldBe 40.50
@@ -254,6 +256,7 @@ class BillSpec extends AnyWordSpec with Matchers{
 
     "reduce second bill (non special items) by same amount as first " when {
       "customer has valid discount card and first bill under 20" in {
+        val fiveStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
         val billOneTotal15: Bill = Bill(orderTotal15, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
         val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
         billOneTotal15.getBillTotal shouldBe 13.5
@@ -261,8 +264,9 @@ class BillSpec extends AnyWordSpec with Matchers{
         billTwoTotal45.getBillTotal shouldBe 40.5
       }
       "customer has valid discount card with 8 stars" in {
+        val eightStampedDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7, date8)))
         val billOneTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(eightStampedDiscountLoyaltyCard), extraTip = None)
-        val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(eightStampedDrinksLoyaltyCard), extraTip = None)
+        val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(eightStampedDiscountLoyaltyCard), extraTip = None)
         billOneTotal45.getBillTotal shouldBe 37.8
         billTwoTotal45.getBillTotal shouldBe 37.8
       }
@@ -275,17 +279,36 @@ class BillSpec extends AnyWordSpec with Matchers{
         billNoDrinks.getBillTotal shouldBe 40.0
       }
       "user has ordered drinks but no 9 stamps on drinks loyalty card" in {
+        val fourStampDrinksLoyaltyCard:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4)))
         val billNo9Stamps: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(fourStampDrinksLoyaltyCard), None)
         billNo9Stamps.getBillTotal shouldBe 65.0
       }
-      "user has valid discount loyalty card but no stars" in {???}
-      "user has valid discount loyalty with stars but only ordered special items" in {???}
+      "user has valid discount loyalty card but no stars" in {
+        val emptyStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(None)
+        val billNoStamps: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(emptyStampDiscountLoyaltyCard), extraTip = None)
+        billNoStamps.getBillTotal shouldBe 45.0
+      }
+      "user has valid discount loyalty with stars but only ordered special items" in {
+        val sixStampDiscountLoyaltyCardWithTodayDate:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6)))
+        val Special1 :MenuItem = MenuItem("Special1", 20.00, ItemType.Special)
+        val Special2 :MenuItem = MenuItem("Special2", 20.00, ItemType.Special)
+        val Special3 :MenuItem = MenuItem("Special3", 20.00, ItemType.Special)
+        val onlySpecialsOrder:List[MenuItem] = List(Special1, Special2, Special3)
+        val billNoStamps: Bill = Bill(onlySpecialsOrder, payService = false, loyaltyCard = Some(sixStampDiscountLoyaltyCardWithTodayDate), extraTip = None)
+        billNoStamps.getBillTotal shouldBe 60.0
+      }
     }
-    "add relevant service charge multiplier" when {
-      "customer says yes to pay service charge" in {???}
+    "add relevant service charge multiplier after discount" when {
+      "customer says yes to pay service charge" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = true, loyaltyCard = None, extraTip = None)
+        billSpecial.getBillTotal shouldBe 81.25
+      }
     }
     "add tip to total cost" when {
-      "customer gives optional tip" in {???}
+      "customer gives optional tip" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = Some(5))
+        billSpecial.getBillTotal shouldBe 70
+      }
     }
   }
 }

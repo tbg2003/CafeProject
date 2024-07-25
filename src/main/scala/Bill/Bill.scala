@@ -103,7 +103,7 @@ case class Bill(
     // + sum of bill specials
     val discountedBillWithSpecials = discountedBill + costOfSpecials
     // add star?
-    card.addStar(costOfOrder)
+    try{card.addStar(costOfOrder)}
     // return new bill price
     //discountedBillWithSpecials
     "%.2f".format(discountedBillWithSpecials).toDouble
