@@ -98,13 +98,14 @@ case class Bill(
     val costOfOrder:Double = sumUpBill()
     val billToDiscount:Double = costOfOrder - costOfSpecials
     // apply discount to bill
-    val discountedBill = billToDiscount * (1+card.getDiscount())
+    val discountedBill = billToDiscount * (1-card.getDiscount())
     // + sum of bill specials
     val discountedBillWithSpecials = discountedBill + costOfSpecials
     // add star?
     card.addStar(costOfOrder)
     // return new bill price
-    discountedBillWithSpecials
+    //discountedBillWithSpecials
+    "%.2f".format(discountedBillWithSpecials).toDouble
   }
 
   def getServiceCharge():Double={

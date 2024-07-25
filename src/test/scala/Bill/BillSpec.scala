@@ -165,8 +165,32 @@ class BillSpec extends AnyWordSpec with Matchers{
     }
   }
 
-  "applyDiscountLoyalty"
+  "applyDiscountLoyalty" should {
+    val coldFoodPrice10 :MenuItem = MenuItem("Cold Food",10.00, ItemType.ColdFood)
+    val hotFoodPrice10 :MenuItem = MenuItem("Hot Food", 10.00, ItemType.HotFood)
+    val specialPrice20 :MenuItem = MenuItem("Special", 20.00, ItemType.Special)
+    val coldDrinkPrice10 :MenuItem = MenuItem("Cold Drink", 10.00, ItemType.ColdDrink)
+    val hotDrinkPrice10 :MenuItem = MenuItem("Hot Drink", 10.00, ItemType.HotDrink)
 
 
-  "getBillTotal"
+    val orderWithSpecial:List[MenuItem] = List(coldFoodPrice10, hotFoodPrice10, specialPrice20, coldDrinkPrice10, hotDrinkPrice10)
+    val orderWithOutSpecial:List[MenuItem] = List(coldFoodPrice10, hotFoodPrice10, coldDrinkPrice10, hotDrinkPrice10)
+
+
+    "return bill value after applying 2% discount per star on all non-special items" when{
+      "customer has valid discount loyalty card with" in {
+        val twoStampDiscountLoyaltyCard1: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2)))
+        val twoStampDiscountLoyaltyCard2: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2)))
+        val bill:Bill = Bill(orderWithSpecial, payService = true, None, None)
+        val bill2:Bill = Bill(orderWithOutSpecial, payService = true, None, None)
+        bill2.applyDiscountLoyalty(twoStampDiscountLoyaltyCard1) shouldBe 38.40
+        //all items total 60, non special items total 40, 2 stars = 4% discount off non special, 1.6 discount, 60 - 1.6 = 58.40
+        bill.applyDiscountLoyalty(twoStampDiscountLoyaltyCard2) shouldBe 58.40
+      }
+    }
+  }
+
+  "getBillTotal" should {
+
+  }
 }
