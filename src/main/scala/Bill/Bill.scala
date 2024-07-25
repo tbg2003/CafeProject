@@ -65,9 +65,14 @@ case class Bill(
   }
 
   def removeCheapestDrinkCost(billToDiscount:Double):Double = {
-    val listDrinks:List[MenuItem] = order.filterNot(_.itemType == ColdDrink).filterNot(_.itemType == HotDrink)
-    val cheapestDrinkCost:Double = listDrinks.minBy(_.price).price
-    billToDiscount - cheapestDrinkCost
+    val listNotDrinks:List[MenuItem] = order.filterNot(_.itemType == ColdDrink).filterNot(_.itemType == HotDrink)
+    val listDrinks:List[MenuItem] = order.diff(listNotDrinks)
+    val discountedBill:Double = if (!listDrinks.isEmpty){
+      val cheapestDrinkCost:Double = listDrinks.minBy(_.price).price
+      billToDiscount - cheapestDrinkCost
+    }
+    else billToDiscount
+    discountedBill
   }
 
   def applyDrinksLoyalty(card: DrinksLoyaltyCard):Double = {
@@ -109,7 +114,7 @@ case class Bill(
       if (payService){
         if(orderItemTypes.contains(ItemType.Special))1.25
         else if(orderItemTypes.contains(ItemType.HotFood))1.2
-        else if(orderItemTypes.contains(ItemType.HotDrink))1.1
+        else if(orderItemTypes.contains(ItemType.HotDrink) || orderItemTypes.contains(ItemType.ColdFood))1.1
         else 1.0
     } else 1.0
     serviceCharge
