@@ -190,7 +190,36 @@ class BillSpec extends AnyWordSpec with Matchers{
     }
   }
 
-  "getBillTotal" should {
 
+
+
+  "getBillTotal" should {
+    "reduce bill by cost of cheapest drink" when {
+      "customer has valid drinks loyalty card and ordered drinks" in {}
+    }
+    "reduce bill by percentage off non special items" when {
+      "customer has valid discount card" in {}
+    }
+    "reduce second bill (non special items) by 2% more after spending £20 on first bill" when {
+      "customer has valid discount card with less that 8 stars" in {}
+    }
+    "reduce third bill (non special items) by 2% more after spending £20 on first and second bill" when {
+      "customer has valid discount card and maximum 6 stars" in {}
+    }
+    "reduce third bill (non special items) by same percentage as second bill after first bill" when {
+      "customer has valid discount card and only first bill over 20 " in {}
+      "customer has valid discount card and first, third bill over 20" in{}
+      "customer has 8 stars on discount card"
+    }
+    "reduce second bill (non special items) by same amount as first " when {
+      "customer has valid discount card and first bill under 20" in {}
+      "customer has valid discount card with 8 stars" in {}
+    }
+    "don't reduce bill" when {
+      "user has 9 stamps on drinks loyalty card but no drinks ordered" in {}
+      "user has ordered drinks but no 9 stamps on drinks loyalty card" in {}
+      "user has valid discount loyalty card but no stars" in {}
+      "user has valid discount loyalty with stars but only ordered special items" in {}
+    }
   }
 }
