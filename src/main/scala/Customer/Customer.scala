@@ -2,7 +2,7 @@ package Customer
 
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCard, LoyaltyCardType}
 import Utils.POSError
-import Utils.POSError.{InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal}
+import Utils.POSError.{InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal, InvalidRemovingCard}
 
 case class Customer(id: Int,
                     fullName: String,
@@ -105,8 +105,13 @@ case class Customer(id: Int,
   }
 
     def removeCurrentLoyaltyCard(): Either[POSError, Boolean] = {
-      ???
+      currentLoyaltyCard = setLoyaltyCard(None)
+      if(currentLoyaltyCard.isEmpty){
+        Right(true)
+      }
+      else{
+        Left(InvalidRemovingCard("Sorry the card cannot be removed"))
+      }
     }
 
-
-  }
+    }
