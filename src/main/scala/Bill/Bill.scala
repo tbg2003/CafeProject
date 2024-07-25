@@ -42,7 +42,7 @@ case class Bill(order:List[MenuItem],
     // if drinks loyaly then bill = apply drinks
     // if discount loyal = apply discount loyalty
     // else = sum bill
-    // get service charge and add
+    // get service charge and *
     // if extra tip then add
     // return total
     ???
@@ -52,13 +52,13 @@ case class Bill(order:List[MenuItem],
     // sum up items
     // if cold drink or hot drink in item types
     //    if get free drink
-    //        remove cheapest drink price from menu
+    //        remove a drink price from bill
     // return new bill price
     ???
   }
 
   def applyDiscountLoyalty():Double = {
-    // sum up items - sum up bill specials
+    // bill = sum up items - sum up bill specials
     // apply discount to bill
     // + sum of bill specials
     // add star?
@@ -66,14 +66,14 @@ case class Bill(order:List[MenuItem],
     ???
   }
 
-  def getServiceCharge():ServiceChargeType={
+  def getServiceCharge():Double={
     // if pay service then
       // get item type list
-      // if contains Specials = Special service charge
-      // else if Hot Food = HFSC
-      // else if Hot Drinks HDSC
-      // else NOSC
-    // else NOSC
+      // if contains Specials = 1.25
+      // else if Hot Food = 1.2
+      // else if Hot Drinks 1.1
+      // else 1
+    // else 1
     ???
   }
 }
