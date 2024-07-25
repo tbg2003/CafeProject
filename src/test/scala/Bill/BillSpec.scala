@@ -26,7 +26,7 @@ class BillSpec extends AnyWordSpec with Matchers{
   val loyaltyCardWith5Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith5Stamps))
   val loyaltyCardWithTodayStamp:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWithTodayStamp))
 
-
+  // totals price 16
   val ColdFood :MenuItem = MenuItem("Cold Food",1.00, ItemType.ColdFood)
   val HotFood :MenuItem = MenuItem("Hot Food", 2.00, ItemType.HotFood)
   val Special :MenuItem = MenuItem("Special", 3.00, ItemType.Special)
@@ -144,12 +144,13 @@ class BillSpec extends AnyWordSpec with Matchers{
     "remove cost of cheapest drink" when {
       "customer has ordered a cold or hot drink and has drinks discount loyalty card with 9 stamps" in {
         val loyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
+        // should total 16
         val orderWithDrinks:List[MenuItem] = List(ColdFood, HotFood, Special, ColdDrink, cheapestColdDrink, HotDrink)
         val bill:Bill = Bill(orderWithDrinks, payService = true, None, None)
-        bill.applyDrinksLoyalty(loyaltyCardWith9Stamps) shouldBe (bill.sumUpBill()-cheapestColdDrink.price)
+        bill.applyDrinksLoyalty(loyaltyCardWith9Stamps) shouldBe 14.00
       }
     }
-    "not cost of cheapest drink" when {
+    "not remove cost of cheapest drink" when {
       "customer has a drinks discount loyalty card with 9 stamps but has not ordered a cold or hot drink" in {
         val loyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
         val orderWithNoDrinks:List[MenuItem] = List(ColdFood, HotFood, Special)
@@ -194,32 +195,97 @@ class BillSpec extends AnyWordSpec with Matchers{
 
 
   "getBillTotal" should {
+    // LoyaltyCards
+    // Discount
+    val emptyStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List()))
+    val fourStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4)))
+    val twoStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2)))
+    val fiveStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
+    val sixStampDiscountLoyaltyCardWithTodayDate: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, today)))
+    val sevenStampedDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7)))
+    val eightStampedDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7, date8)))
+    val todayStampedDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, today)))
+    // Drinks
+    val emptyStampDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List()))
+    val fourStampDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4)))
+    val twoStampDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2)))
+    val fiveStampDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
+    val eightStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7, date8)))
+    val nineStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7,date8, date9)))
+    val todayStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, today)))
+
+    //
+    val ColdFood10 :MenuItem = MenuItem("Cold Food",10.00, ItemType.ColdFood)
+    val HotFood10 :MenuItem = MenuItem("Hot Food", 10.00, ItemType.HotFood)
+    val Special20 :MenuItem = MenuItem("Special", 20.00, ItemType.Special)
+    val ColdDrink10 :MenuItem = MenuItem("Cold Drink", 10.00, ItemType.ColdDrink)
+    val cheapestColdDrink5 :MenuItem = MenuItem("Cold Drink", 5.00, ItemType.ColdDrink)
+    val HotDrink10 :MenuItem = MenuItem("Hot Drink", 10.00, ItemType.HotDrink)
+    // total 65
+    val mixedOrderWithSpecial:List[MenuItem] = List(ColdFood10, HotFood10, Special20, ColdDrink10, cheapestColdDrink5, HotDrink10)
+    // total 45
+    val mixedOrderWithOutSpecial:List[MenuItem] = List(ColdFood10, HotFood10, ColdDrink10, cheapestColdDrink5, HotDrink10)
+
+    val orderTotal15:List[MenuItem] = List(ColdFood10, cheapestColdDrink5)
+
+
+
     "reduce bill by cost of cheapest drink" when {
-      "customer has valid drinks loyalty card and ordered drinks" in {}
+      "customer has valid drinks loyalty card and ordered drinks" in {
+        val billDrinksLoyalty: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(nineStampedDrinksLoyaltyCard), extraTip = None)
+        billDrinksLoyalty.getBillTotal shouldBe 60.0
+      }
     }
     "reduce bill by percentage off non special items" when {
-      "customer has valid discount card" in {}
+      "customer has valid discount card" in {
+        val billDiscountLoyalty: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
+        billDiscountLoyalty.getBillTotal shouldBe 40.50
+      }
     }
     "reduce second bill (non special items) by 2% more after spending £20 on first bill" when {
-      "customer has valid discount card with less that 8 stars" in {}
+      "customer has valid discount card with less that 8 stars" in {
+        val billOneTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
+        val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
+        billOneTotal45.getBillTotal shouldBe 40.50
+        // five stamps should now be 6
+        billTwoTotal45.getBillTotal shouldBe 39.6
+      }
     }
-    "reduce third bill (non special items) by 2% more after spending £20 on first and second bill" when {
-      "customer has valid discount card and maximum 6 stars" in {}
-    }
-    "reduce third bill (non special items) by same percentage as second bill after first bill" when {
-      "customer has valid discount card and only first bill over 20 " in {}
-      "customer has valid discount card and first, third bill over 20" in{}
-      "customer has 8 stars on discount card"
-    }
+
     "reduce second bill (non special items) by same amount as first " when {
-      "customer has valid discount card and first bill under 20" in {}
-      "customer has valid discount card with 8 stars" in {}
+      "customer has valid discount card and first bill under 20" in {
+        val billOneTotal15: Bill = Bill(orderTotal15, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
+        val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
+        billOneTotal15.getBillTotal shouldBe 13.5
+        // five stamps should now be 6
+        billTwoTotal45.getBillTotal shouldBe 40.5
+      }
+      "customer has valid discount card with 8 stars" in {
+        val billOneTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(eightStampedDiscountLoyaltyCard), extraTip = None)
+        val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(eightStampedDrinksLoyaltyCard), extraTip = None)
+        billOneTotal45.getBillTotal shouldBe 37.8
+        billTwoTotal45.getBillTotal shouldBe 37.8
+      }
     }
     "don't reduce bill" when {
-      "user has 9 stamps on drinks loyalty card but no drinks ordered" in {}
-      "user has ordered drinks but no 9 stamps on drinks loyalty card" in {}
-      "user has valid discount loyalty card but no stars" in {}
-      "user has valid discount loyalty with stars but only ordered special items" in {}
+      "user has 9 stamps on drinks loyalty card but no drinks ordered" in {
+        val orderNoDrinks:List[MenuItem] = List(ColdFood10, HotFood10, Special20)
+        val nineStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7,date8, date9)))
+        val billNoDrinks: Bill = Bill(orderNoDrinks, payService = false, loyaltyCard = Some(nineStampedDrinksLoyaltyCard), None)
+        billNoDrinks.getBillTotal shouldBe 40.0
+      }
+      "user has ordered drinks but no 9 stamps on drinks loyalty card" in {
+        val billNo9Stamps: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(fourStampDrinksLoyaltyCard), None)
+        billNo9Stamps.getBillTotal shouldBe 65.0
+      }
+      "user has valid discount loyalty card but no stars" in {???}
+      "user has valid discount loyalty with stars but only ordered special items" in {???}
+    }
+    "add relevant service charge multiplier" when {
+      "customer says yes to pay service charge" in {???}
+    }
+    "add tip to total cost" when {
+      "customer gives optional tip" in {???}
     }
   }
 }
