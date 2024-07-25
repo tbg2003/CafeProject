@@ -3,14 +3,11 @@ package Customer
 
 
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard}
-
 import Utils.POSError.{AlreadyHasCard, InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal}
-
 import LoyaltyCard.DiscountLoyaltyCard
 import LoyaltyCard.LoyaltyCardType.DrinksLoyalty
-
+import Utils.POSError
 import Utils.POSError.{AlreadyHasCard, InvalidMinSpendTotal}
-
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -77,13 +74,13 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     "return left" when {
       "when customer has loyalty card" in {
         val customer:Customer = Customer(1, "John Doe", 18, loyaltyCard = Some(emptyStampDiscountLoyaltyCard))
-        customer.hasLoyaltyCard() shouldBe Left(AlreadyHasCard("You already have a loyalty card"))
+        customer.hasNoLoyaltyCard() shouldBe Left(AlreadyHasCard("You already have a loyalty card"))
       }
     }
     "return right" when {
       "when customer has no loyalty card" in {
         val customer:Customer = Customer(1, "John Doe", 18)
-        customer.hasLoyaltyCard() shouldBe Right(true)
+        customer.hasNoLoyaltyCard() shouldBe Right(true)
       }
     }
   }
@@ -92,7 +89,7 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     "return a Left" when{
       "customer's age doesn't meet valid age requirement" in {
         val customer:Customer = Customer(1, "John Doe", invalidAge)
-        customer.isValidAge() shouldBe Left(POSError.InvalidAge("Customer is too young"))
+        customer.isValidAge() shouldBe Left(InvalidAge("Customer is too young"))
       }
     }
     "return a Right" when{
@@ -107,7 +104,7 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     "return a Left" when{
       "customer's total purchases is under 5" in {
         val customer:Customer = Customer(1, "John Doe", validAge, validTotalSpend, totalPurchasesUnder5)
-        customer.hasMadeMinPurchases() shouldBe Left(POSError.InvalidMinPurchases("Minimum purchase less than 5 times"))
+        customer.hasMadeMinPurchases() shouldBe Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
       }
     }
     "return a Right" when{
