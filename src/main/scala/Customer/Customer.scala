@@ -11,6 +11,7 @@ case class Customer(id: Int,
                     totalPurchases: Int = 0,
                     loyaltyCard: Option[LoyaltyCard] = None) {
 
+
   private var currentTotalSpent: Double = totalSpent
   private var currentTotalPurchases: Int = totalPurchases
   private var currentLoyaltyCard: Option[LoyaltyCard] = loyaltyCard

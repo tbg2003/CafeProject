@@ -1,9 +1,16 @@
 package Customer
 
 
+
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard}
-import Utils.POSError
+
 import Utils.POSError.{AlreadyHasCard, InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal}
+
+import LoyaltyCard.DiscountLoyaltyCard
+import LoyaltyCard.LoyaltyCardType.DrinksLoyalty
+
+import Utils.POSError.{AlreadyHasCard, InvalidMinSpendTotal}
+
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -18,6 +25,8 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   implicit val validTotalSpend150:Double = 150.00
   implicit val totalPurchasesUnder5:Int = 2
   implicit val totalPurchasesOver5:Int = 8
+  implicit val emptyStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List()))
+
 
   val date1: LocalDate = LocalDate.of(2024, 5, 1)
   val date2: LocalDate = LocalDate.of(2024, 3, 2)
@@ -42,10 +51,40 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  "getLoyaltyCard" should {
+    "return None" when {
+      " there is no loyalty card assigned" in {
+        val customer:Customer = Customer(1, "John Doe", 18)
+        customer.getLoyaltyCard() shouldBe None
+      }
+    }
+    "return discount loyalty card" when {
+      "discount loyalty card is assigned" in {
+        val customer:Customer = Customer(1, "John Doe", 18, loyaltyCard = Some(emptyStampDiscountLoyaltyCard))
+        customer.getLoyaltyCard() shouldBe Some(emptyStampDiscountLoyaltyCard)
+      }
+    }
+  }
+
   "newOrder" should {
     "update total spent with purchase amount, add 1 to total purchases" in {
       val customer:Customer = Customer(1, "John Doe", 18)
       assert(customer.newOrder(10.00) == (10.00, 1))
+    }
+  }
+
+  "hasLoyaltyCard" should {
+    "return left" when {
+      "when customer has loyalty card" in {
+        val customer:Customer = Customer(1, "John Doe", 18, loyaltyCard = Some(emptyStampDiscountLoyaltyCard))
+        customer.hasLoyaltyCard() shouldBe Left(AlreadyHasCard("You already have a loyalty card"))
+      }
+    }
+    "return right" when {
+      "when customer has no loyalty card" in {
+        val customer:Customer = Customer(1, "John Doe", 18)
+        customer.hasLoyaltyCard() shouldBe Right(true)
+      }
     }
   }
 
@@ -131,6 +170,7 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     }
   }
 
+
   "applyForDiscountLoyaltyCard" should {
     "return Left" when{
       "the age is less than 18" in {
@@ -166,9 +206,17 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     }
   }
 
-  "hasLoyaltyCard"
-  "hasSpentMinTotal"
-  "removeCurrentLoyaltyCard"
+
+/** TO BE TESTED
+
+ applyForLoyaltyCard
+ setLoyaltyCard
+ applyForLoyaltyCard
+ applyForDiscountLoyaltyCard
+ hasLoyaltyCard
+ removeCurrentLoyaltyCard
+
+  */
 
 
 
