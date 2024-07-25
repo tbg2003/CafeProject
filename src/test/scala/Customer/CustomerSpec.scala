@@ -1,6 +1,8 @@
 package Customer
 
 
+import LoyaltyCard.DiscountLoyaltyCard
+import LoyaltyCard.LoyaltyCardType.DrinksLoyalty
 import Utils.POSError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
@@ -13,9 +15,9 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   implicit val validTotalSpend:Double = 160.00
   implicit val totalPurchasesUnder5:Int = 2
   implicit val totalPurchasesOver5:Int = 8
+  implicit val emptyStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List()))
 
-//  val customer:Customer = Customer()
-
+  // implemented
   "getTotalSpent" should {
     "return the current total spent" in {
       val customer:Customer = Customer(1, "John Doe", 18, totalSpent = 200)
@@ -30,6 +32,21 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  "getLoyaltyCard" should {
+    "return None" when {
+      " there is no loyalty card assigned" in {
+        val customer:Customer = Customer(1, "John Doe", 18)
+        customer.getLoyaltyCard() shouldBe None
+      }
+    }
+    "return discount loyalty card" when {
+      "discount loyalty card is assigned" in {
+        val customer:Customer = Customer(1, "John Doe", 18, loyaltyCard = Some(emptyStampDiscountLoyaltyCard))
+        customer.getLoyaltyCard() shouldBe Some(emptyStampDiscountLoyaltyCard)
+      }
+    }
+  }
+
   "newOrder" should {
     "update total spent with purchase amount, add 1 to total purchases" in {
       val customer:Customer = Customer(1, "John Doe", 18)
@@ -37,6 +54,7 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  // not implemented
   "isValidAge" should {
     "return a Left" when{
       "customer's age doesn't meet valid age requirement" in {
@@ -71,13 +89,18 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     }
   }
 
+/** TO BE TESTED
 
-  "applyForLoyaltyCard"
-  "applyForDrinksLoyaltyCard"
-  "applyForDiscountLoyaltyCard"
-  "hasLoyaltyCard"
-  "hasSpentMinTotal"
-  "removeCurrentLoyaltyCard"
+ applyForLoyaltyCard
+ setLoyaltyCard
+ applyForLoyaltyCard
+ applyForDrinksLoyaltyCard
+ applyForDiscountLoyaltyCard
+ hasLoyaltyCard
+ hasSpentMinTotal
+ removeCurrentLoyaltyCard
+
+  */
 
 
 

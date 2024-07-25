@@ -3,11 +3,18 @@ package Customer
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCard, LoyaltyCardType}
 import Utils.POSError
 
-case class Customer(id: Int, fullName: String, age:Int, totalSpent: Double = 0, totalPurchases: Int = 0) {
+case class Customer(
+                     id: Int,
+                     fullName: String,
+                     age:Int,
+                     totalSpent: Double = 0,
+                     totalPurchases: Int = 0,
+                     loyaltyCard: Option[LoyaltyCard] = None
+                   ) {
 
   private var currentTotalSpent: Double = totalSpent
   private var currentTotalPurchases: Int = totalPurchases
-  private var currentLoyaltyCard: Option[LoyaltyCard] = None
+  private var currentLoyaltyCard: Option[LoyaltyCard] = loyaltyCard
 
 
   def getLoyaltyCard(): Option[LoyaltyCard] = {
