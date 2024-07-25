@@ -143,13 +143,27 @@ class BillSpec extends AnyWordSpec with Matchers{
   "applyDrinksLoyalty" should {
     "remove cost of cheapest drink" when {
       "customer has ordered a cold or hot drink and has drinks discount loyalty card with 9 stamps" in {
+        val loyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
         val orderWithDrinks:List[MenuItem] = List(ColdFood, HotFood, Special, ColdDrink, cheapestColdDrink, HotDrink)
         val bill:Bill = Bill(orderWithDrinks, payService = true, None, None)
-        bill.applyDrinksLoyalty(validLoyaltyCardWith9Stamps) shouldBe (bill.sumUpBill() - cheapestColdDrink.price)
+        bill.applyDrinksLoyalty(loyaltyCardWith9Stamps) shouldBe (bill.sumUpBill()-cheapestColdDrink.price)
+      }
+    }
+    "not cost of cheapest drink" when {
+      "customer has a drinks discount loyalty card with 9 stamps but has not ordered a cold or hot drink" in {
+        val loyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
+        val orderWithNoDrinks:List[MenuItem] = List(ColdFood, HotFood, Special)
+        val bill:Bill = Bill(orderWithNoDrinks, payService = true, None, None)
+        bill.applyDrinksLoyalty(loyaltyCardWith9Stamps) shouldBe bill.sumUpBill()
+      }
+      "customer has not ordered a cold or hot drink but doesn't have a valid drinks discount loyalty card" in {
+        val invalidLoyaltyCard:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith5Stamps))
+        val orderWithDrinks:List[MenuItem] = List(ColdFood, HotFood, Special, ColdDrink, cheapestColdDrink, HotDrink)
+        val bill:Bill = Bill(orderWithDrinks, payService = true, None, None)
+        bill.applyDrinksLoyalty(invalidLoyaltyCard) shouldBe bill.sumUpBill()
       }
     }
   }
-
 
   "applyDiscountLoyalty"
 

@@ -80,7 +80,7 @@ case class Bill(
     val itemTypes:List[ItemType] = getOrderItemTypes()
 
     val billWithDiscount:Double =
-      if (itemTypes.contains(ItemType.ColdDrink)||itemTypes.contains(ItemType.HotDrink)){
+      if (itemTypes.contains(ItemType.ColdDrink) || itemTypes.contains(ItemType.HotDrink)){
         if (getFreeDrink(card)) {
           val billWithDrinkRemoved:Double = removeCheapestDrinkCost(billToDiscount)
           billWithDrinkRemoved
