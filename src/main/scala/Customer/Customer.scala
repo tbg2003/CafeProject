@@ -60,26 +60,16 @@ case class Customer(id: Int,
   def applyForDrinksLoyaltyCard(): Either[POSError, LoyaltyCard] = {
     for {
       _ <- isValidAge()
-      _ <- hasLoyaltyCard()
+      _ <- hasNoLoyaltyCard()
       _ <- hasMadeMinPurchases()
       newCard = DrinksLoyaltyCard(None)
-    } yield newCard
-  }
-
-  def applyLoyaltyCard(loyaltyCard: LoyaltyCardType): Either[POSError, LoyaltyCard] = {
-    for {
-      _ <- isValidAge()
-      _ <- hasLoyaltyCard()
-      _ <- hasMadeMinPurchases()
-      _ <- if (loyaltyCard == LoyaltyCardType.DiscountLoyalty) hasSpentMinTotal() else Right()
-      newCard = if (loyaltyCard == LoyaltyCardType.DiscountLoyalty) DiscountLoyaltyCard(None) else DrinksLoyaltyCard(None)
     } yield newCard
   }
 
   def applyForDiscountLoyaltyCard(): Either[POSError, LoyaltyCard] = {
     for {
       _ <- isValidAge()
-      _ <- hasLoyaltyCard()
+      _ <- hasNoLoyaltyCard()
       _ <- hasMadeMinPurchases()
       _ <- hasSpentMinTotal()
       newCard = DiscountLoyaltyCard(None)
@@ -93,7 +83,7 @@ case class Customer(id: Int,
     }
   }
 
-  def hasLoyaltyCard(): Either[POSError, Boolean] = {
+  def hasNoLoyaltyCard(): Either[POSError, Boolean] = {
     currentLoyaltyCard match {
       case Some(card) => Left(POSError.AlreadyHasCard("You already have a loyalty card"))
       case None => Right(true)
