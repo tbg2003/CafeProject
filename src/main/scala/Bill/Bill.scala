@@ -14,10 +14,10 @@ case class Bill(
                 loyaltyCard:Option[LoyaltyCard],
                 extraTip:Option[Double]){
 
-  def getOrderItemTypes():ListBuffer[ItemType] = {
+  def getOrderItemTypes():List[ItemType] = {
     val itemTypeList:ListBuffer[ItemType] = ListBuffer()
     order.foreach(itemTypeList+=_.itemType)
-    itemTypeList
+    itemTypeList.toList
   }
 
   def sumUpBillSpecials():Double = {
@@ -72,7 +72,7 @@ case class Bill(
 
   def applyDrinksLoyalty(card: DrinksLoyaltyCard):Double = {
     val billToDiscount:Double = sumUpBill()
-    val itemTypes:ListBuffer[ItemType] = getOrderItemTypes()
+    val itemTypes:List[ItemType] = getOrderItemTypes()
 
     val billWithDiscount:Double =
       if (itemTypes.contains(ItemType.ColdDrink)||itemTypes.contains(ItemType.HotDrink)){
@@ -104,7 +104,7 @@ case class Bill(
 
   def getServiceCharge():Double={
     // if pay service then
-    val orderItemTypes:ListBuffer[ItemType] = getOrderItemTypes()
+    val orderItemTypes:List[ItemType] = getOrderItemTypes()
     val serviceCharge:Double =
       if (payService){
         if(orderItemTypes.contains(ItemType.Special))1.25
