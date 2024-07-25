@@ -4,6 +4,7 @@ package Customer
 import LoyaltyCard.DiscountLoyaltyCard
 import LoyaltyCard.LoyaltyCardType.DrinksLoyalty
 import Utils.POSError
+import Utils.POSError.InvalidMinSpendTotal
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -13,6 +14,7 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   implicit val validAge:Int = 19
   implicit val invalidTotalSpend:Double = 100.00
   implicit val validTotalSpend:Double = 160.00
+  implicit val validTotalSpend150:Double = 150.00
   implicit val totalPurchasesUnder5:Int = 2
   implicit val totalPurchasesOver5:Int = 8
   implicit val emptyStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List()))
@@ -74,7 +76,7 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     "return a Left" when{
       "customer's total purchases is under 5" in {
         val customer:Customer = Customer(1, "John Doe", validAge, validTotalSpend, totalPurchasesUnder5)
-        customer.hasMadeMinPurchases() shouldBe Left(POSError.InvalidMinPurchases(""))
+        customer.hasMadeMinPurchases() shouldBe Left(POSError.InvalidMinPurchases("Minimum purchase less than 5 times"))
       }
     }
     "return a Right" when{
@@ -85,6 +87,26 @@ class CustomerSpec extends AnyWordSpec with Matchers {
       "customer's total purchases is 5" in {
         val customer:Customer = Customer(1, "John Doe", validAge, validTotalSpend, 5)
         customer.hasMadeMinPurchases() shouldBe Right(true)
+      }
+    }
+  }
+  "hasSpentMinTotal" should {
+    "return a Left" when{
+      "customers total purchases is less than 150" in {
+        val customer = Customer(3, "John Doe", validAge, invalidTotalSpend, totalPurchasesOver5)
+        customer.hasSpentMinTotal() shouldBe Left(InvalidMinSpendTotal("Minimum spent less than 150"))
+      }
+    }
+    "return a Right" when{
+      "customers total purchases is greater than 150" in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
+        customer.hasSpentMinTotal() shouldBe Right(true)
+      }
+    }
+    "return a Right" when{
+      "customers total purchases is exactly 150" in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        customer.hasSpentMinTotal() shouldBe Right(true)
       }
     }
   }

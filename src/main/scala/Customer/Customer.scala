@@ -2,15 +2,15 @@ package Customer
 
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCard, LoyaltyCardType}
 import Utils.POSError
+import Utils.POSError.{InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal}
 
-case class Customer(
-                     id: Int,
-                     fullName: String,
-                     age:Int,
-                     totalSpent: Double = 0,
-                     totalPurchases: Int = 0,
-                     loyaltyCard: Option[LoyaltyCard] = None
-                   ) {
+case class Customer(id: Int,
+                    fullName: String,
+                    age: Int,
+                    totalSpent: Double = 0,
+                    totalPurchases: Int = 0,
+                    loyaltyCard: Option[LoyaltyCard] = None) {
+
 
   private var currentTotalSpent: Double = totalSpent
   private var currentTotalPurchases: Int = totalPurchases
@@ -21,7 +21,7 @@ case class Customer(
     currentLoyaltyCard
   }
 
-  def setLoyaltyCard(newCard:Option[LoyaltyCard]): Option[LoyaltyCard] = {
+  def setLoyaltyCard(newCard: Option[LoyaltyCard]): Option[LoyaltyCard] = {
     currentLoyaltyCard = newCard match {
       case Some(card) => Some(card)
       case None => None
@@ -58,26 +58,26 @@ case class Customer(
   }
 
   def applyForDrinksLoyaltyCard(): Either[POSError, LoyaltyCard] = {
-    for{
-      _ <-isValidAge()
-      _ <-hasLoyaltyCard()
-      _ <-hasMadeMinPurchases()
+    for {
+      _ <- isValidAge()
+      _ <- hasLoyaltyCard()
+      _ <- hasMadeMinPurchases()
       newCard = DrinksLoyaltyCard(None)
     } yield newCard
   }
 
   def applyLoyaltyCard(loyaltyCard: LoyaltyCardType): Either[POSError, LoyaltyCard] = {
-    for{
-      _ <-isValidAge()
-      _ <-hasLoyaltyCard()
-      _ <-hasMadeMinPurchases()
-      _ <- if(loyaltyCard == LoyaltyCardType.DiscountLoyalty) hasSpentMinTotal() else Right()
+    for {
+      _ <- isValidAge()
+      _ <- hasLoyaltyCard()
+      _ <- hasMadeMinPurchases()
+      _ <- if (loyaltyCard == LoyaltyCardType.DiscountLoyalty) hasSpentMinTotal() else Right()
       newCard = if (loyaltyCard == LoyaltyCardType.DiscountLoyalty) DiscountLoyaltyCard(None) else DrinksLoyaltyCard(None)
     } yield newCard
   }
 
   def applyForDiscountLoyaltyCard(): Either[POSError, LoyaltyCard] = {
-    for{
+    for {
       _ <- isValidAge()
       _ <- hasLoyaltyCard()
       _ <- hasMadeMinPurchases()
@@ -87,7 +87,10 @@ case class Customer(
   }
 
   def isValidAge(): Either[POSError, Boolean] = {
-    ???
+    if (age < 18) Left(InvalidAge("Customer is too young"))
+    else {
+      Right(true)
+    }
   }
 
   def hasLoyaltyCard(): Either[POSError, Boolean] = {
@@ -98,21 +101,22 @@ case class Customer(
   }
 
   def hasMadeMinPurchases(): Either[POSError, Boolean] = {
-    ???
+    if (currentTotalPurchases < 5) Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
+    else {
+      Right(true)
+    }
   }
 
   def hasSpentMinTotal(): Either[POSError, Boolean] = {
-    ???
+    if(currentTotalSpent<150){
+      Left(InvalidMinSpendTotal("Minimum spent less than 150"))
+    }
+    else Right(true)
   }
 
-  def removeCurrentLoyaltyCard():Either[POSError, Boolean] = {
-    ???
+    def removeCurrentLoyaltyCard(): Either[POSError, Boolean] = {
+      ???
+    }
+
+
   }
-
-
-
-
-
-
-
-}
