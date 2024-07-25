@@ -8,6 +8,25 @@ import org.scalatest.wordspec.AnyWordSpec
 import java.time.LocalDate
 
 class BillSpec extends AnyWordSpec with Matchers{
+
+  val date1: LocalDate = LocalDate.of(2024, 5, 1)
+  val date2: LocalDate = LocalDate.of(2024, 5, 2)
+  val date3: LocalDate = LocalDate.of(2024, 5, 3)
+  val date4: LocalDate = LocalDate.of(2024, 5, 4)
+  val date5: LocalDate = LocalDate.of(2024, 5, 5)
+  val date6: LocalDate = LocalDate.of(2024, 5, 6)
+  val date7: LocalDate = LocalDate.of(2024, 5, 7)
+  val date8: LocalDate = LocalDate.of(2024, 5, 8)
+  val date9: LocalDate = LocalDate.of(2024, 5, 9)
+  val today: LocalDate = LocalDate.now()
+  val cardWith9Stamps:List[LocalDate] = List(date1, date2, date3, date4, date5, date6, date7, date8, date9)
+  val cardWith5Stamps:List[LocalDate] = List(date1, date2, date3, date4, date5)
+  val cardWithTodayStamp:List[LocalDate] = List(date1, date2, date3, date4, today)
+  val validLoyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
+  val loyaltyCardWith5Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith5Stamps))
+  val loyaltyCardWithTodayStamp:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWithTodayStamp))
+
+
   val ColdFood :MenuItem = MenuItem("Cold Food",1.00, ItemType.ColdFood)
   val HotFood :MenuItem = MenuItem("Hot Food", 2.00, ItemType.HotFood)
   val Special :MenuItem = MenuItem("Special", 3.00, ItemType.Special)
@@ -99,22 +118,7 @@ class BillSpec extends AnyWordSpec with Matchers{
   }
 
   "getFreeDrink" should {
-    val date1: LocalDate = LocalDate.of(2024, 5, 1)
-    val date2: LocalDate = LocalDate.of(2024, 5, 2)
-    val date3: LocalDate = LocalDate.of(2024, 5, 3)
-    val date4: LocalDate = LocalDate.of(2024, 5, 4)
-    val date5: LocalDate = LocalDate.of(2024, 5, 5)
-    val date6: LocalDate = LocalDate.of(2024, 5, 6)
-    val date7: LocalDate = LocalDate.of(2024, 5, 7)
-    val date8: LocalDate = LocalDate.of(2024, 5, 8)
-    val date9: LocalDate = LocalDate.of(2024, 5, 9)
-    val today: LocalDate = LocalDate.now()
-    val cardWith9Stamps:List[LocalDate] = List(date1, date2, date3, date4, date5, date6, date7, date8, date9)
-    val cardWith5Stamps:List[LocalDate] = List(date1, date2, date3, date4, date5)
-    val cardWithTodayStamp:List[LocalDate] = List(date1, date2, date3, date4, today)
-    val validLoyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
-    val loyaltyCardWith5Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith5Stamps))
-    val loyaltyCardWithTodayStamp:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWithTodayStamp))
+
     "return true" when{
       "customer has drinks discount card and gets 10th stamp" in {
         val orderWithDrinks:List[MenuItem] = List(ColdFood, HotFood, Special, ColdDrink, cheaperColdDrink, HotDrink)
@@ -136,9 +140,10 @@ class BillSpec extends AnyWordSpec with Matchers{
     }
   }
 
-
   "applyDrinksLoyalty" should {
-
+    "remove cost of cheapest drink" when {
+      "customer has ordered a cold or hot drink and has drinks discount loyalty card with 9 stamps" in {}
+    }
   }
 
 
