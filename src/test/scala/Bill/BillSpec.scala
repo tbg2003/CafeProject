@@ -12,7 +12,7 @@ class BillSpec extends AnyWordSpec with Matchers{
   val HotFood :MenuItem = MenuItem("Hot Food", 2.00, ItemType.HotFood)
   val Special :MenuItem = MenuItem("Special", 3.00, ItemType.Special)
   val ColdDrink :MenuItem = MenuItem("Cold Drink", 4.00, ItemType.ColdDrink)
-  val ColdDrink2 :MenuItem = MenuItem("Cold Drink", 4.00, ItemType.ColdDrink)
+  val cheaperColdDrink :MenuItem = MenuItem("Cold Drink", 4.00, ItemType.ColdDrink)
   val HotDrink :MenuItem = MenuItem("Hot Drink", 4.00, ItemType.HotDrink)
 
   val order:List[MenuItem] = List(ColdFood, HotFood, Special, ColdDrink, HotDrink)
@@ -108,17 +108,38 @@ class BillSpec extends AnyWordSpec with Matchers{
     val date7: LocalDate = LocalDate.of(2024, 5, 7)
     val date8: LocalDate = LocalDate.of(2024, 5, 8)
     val date9: LocalDate = LocalDate.of(2024, 5, 9)
+    val today: LocalDate = LocalDate.now()
     val cardWith9Stamps:List[LocalDate] = List(date1, date2, date3, date4, date5, date6, date7, date8, date9)
     val cardWith5Stamps:List[LocalDate] = List(date1, date2, date3, date4, date5)
-    val loyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
+    val cardWithTodayStamp:List[LocalDate] = List(date1, date2, date3, date4, today)
+    val validLoyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
     val loyaltyCardWith5Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith5Stamps))
+    val loyaltyCardWithTodayStamp:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWithTodayStamp))
     "return true" when{
-      "customer has drinks discount card and gets 10th stamp" in {}
+      "customer has drinks discount card and gets 10th stamp" in {
+        val orderWithDrinks:List[MenuItem] = List(ColdFood, HotFood, Special, ColdDrink, cheaperColdDrink, HotDrink)
+        def bill:Bill = Bill(orderWithDrinks, payService = true, None, None)
+        bill.getFreeDrink(validLoyaltyCardWith9Stamps) shouldBe true
+      }
+    }
+    "return false" when{
+      "customer has invalid number of stamps on drinks discount card" in {
+        val orderWithDrinks:List[MenuItem] = List(ColdFood, HotFood, Special, ColdDrink, cheaperColdDrink, HotDrink)
+        def bill:Bill = Bill(orderWithDrinks, payService = true, None, None)
+        bill.getFreeDrink(loyaltyCardWith5Stamps) shouldBe false
+      }
+      "customer has already had stamp today on drinks discount card" in {
+        val orderWithDrinks:List[MenuItem] = List(ColdFood, HotFood, Special, ColdDrink, cheaperColdDrink, HotDrink)
+        def bill:Bill = Bill(orderWithDrinks, payService = true, None, None)
+        bill.getFreeDrink(loyaltyCardWithTodayStamp) shouldBe false
+      }
     }
   }
 
 
-  "applyDrinksLoyalty"
+  "applyDrinksLoyalty" should {
+
+  }
 
 
   "applyDiscountLoyalty"
