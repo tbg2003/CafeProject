@@ -1,6 +1,7 @@
 package Bill
 
-import LoyaltyCard.LoyaltyCard
+import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCard}
+import MenuStuff.ItemType.{ColdDrink, HotDrink}
 import MenuStuff.{ItemType, MenuItem}
 
 import scala.annotation.tailrec
@@ -42,43 +43,75 @@ case class Bill(
     helpSumBill(order)
   }
 
-  def g():Double = {
-    // if drinks loyaly then bill = apply drinks
-    // if discount loyal = apply discount loyalty
-    // else = sum bill
-    // get service charge and *
-    // if extra tip then add
-    // return total
-    ???
+  def getBillTotal():Double = {
+    val billDiscounted:Double = loyaltyCard match {
+      case Some(card:DrinksLoyaltyCard) => applyDrinksLoyalty(card)
+      case Some(card:DiscountLoyaltyCard) => applyDiscountLoyalty(card)
+      case None => sumUpBill()
+    }
+    val billWithService:Double = billDiscounted * getServiceCharge()
+    val billTotal:Double = extraTip match {
+      case Some(tip) => billWithService + tip
+      case None => billWithService
+    }
+    billTotal
   }
 
-  def applyDrinksLoyalty():Double = {
-    // sum up items
-    // if cold drink or hot drink in item types
-    //    if get free drink is Right
-    //        remove a drink price from bill
-    //    else print Left error
-    // return new bill price
-    ???
+  def getFreeDrink(card: DrinksLoyaltyCard):Boolean = {
+    card.getFreeDrink() match {
+      case Left(error) => false
+      case Right(value) => true
+    }
   }
 
-  def applyDiscountLoyalty():Double = {
+  def removeCheapestDrinkCost(billToDiscount:Double):Double = {
+    val listDrinks:List[MenuItem] = order.filterNot(_.itemType == ColdDrink).filterNot(_.itemType == HotDrink)
+    val cheapestDrinkCost:Double = listDrinks.minBy(_.price).price
+    billToDiscount - cheapestDrinkCost
+  }
+
+  def applyDrinksLoyalty(card: DrinksLoyaltyCard):Double = {
+    val billToDiscount:Double = sumUpBill()
+    val itemTypes:ListBuffer[ItemType] = getOrderItemTypes()
+
+    val billWithDiscount:Double =
+      if (itemTypes.contains(ItemType.ColdDrink)||itemTypes.contains(ItemType.HotDrink)){
+        if (getFreeDrink(card)) {
+          val billWithDrinkRemoved:Double = removeCheapestDrinkCost(billToDiscount)
+          billWithDrinkRemoved
+        }
+        else billToDiscount
+      }
+      else billToDiscount
+
+    billWithDiscount
+  }
+
+  def applyDiscountLoyalty(card: DiscountLoyaltyCard):Double = {
     // bill = sum up items - sum up bill specials
+    val costOfSpecials:Double = sumUpBillSpecials()
+    val costOfOrder:Double = sumUpBill()
+    val billToDiscount:Double = costOfOrder - costOfSpecials
     // apply discount to bill
+    val discountedBill = billToDiscount * (1+card.getDiscount())
     // + sum of bill specials
+    val discountedBillWithSpecials = discountedBill + costOfSpecials
     // add star?
+    card.addStar(costOfOrder)
     // return new bill price
-    ???
+    discountedBillWithSpecials
   }
 
   def getServiceCharge():Double={
     // if pay service then
-      // get item type list
-      // if contains Specials = 1.25
-      // else if Hot Food = 1.2
-      // else if Hot Drinks 1.1
-      // else 1
-    // else 1
-    ???
+    val orderItemTypes:ListBuffer[ItemType] = getOrderItemTypes()
+    val serviceCharge:Double =
+      if (payService){
+        if(orderItemTypes.contains(ItemType.Special))1.25
+        else if(orderItemTypes.contains(ItemType.HotFood))1.2
+        else if(orderItemTypes.contains(ItemType.HotDrink))1.1
+        else 1.0
+    } else 1.0
+    serviceCharge
   }
 }
