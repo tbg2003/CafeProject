@@ -3,23 +3,24 @@ package Customer
 import LoyaltyCard.{LoyaltyCard, LoyaltyCardType}
 import Utils.POSError
 
-case class Customer(fullName: String, age:Int) {
+case class Customer(id: Int, fullName: String, age:Int, totalSpent: Double = 0, totalPurchases: Int = 0) {
 
-  private var totalSpent: Double = 0
-  private var totalPurchases: Int = 0
+  private var currentTotalSpent: Double = totalSpent
+  private var currentTotalPurchases: Int = totalPurchases
+  private var currentLoyaltyCard: Option[LoyaltyCard] = None
 
   def getTotalSpent(): Double = {
-    totalSpent
+    currentTotalSpent
   }
 
   def getTotalPurchases(): Int = {
-    totalPurchases
+    currentTotalPurchases
   }
 
-  def newOrder(purchaseAmount: Double): Tuple2[Double, Int] = {
-    totalSpent += purchaseAmount
-    totalPurchases += 1
-    Tuple2(totalSpent, totalPurchases)
+  def newOrder(purchaseAmount: Double): (Double, Int) = {
+    currentTotalSpent += purchaseAmount
+    currentTotalPurchases += 1
+    Tuple2(currentTotalSpent, currentTotalPurchases)
 
   }
 
@@ -48,6 +49,10 @@ case class Customer(fullName: String, age:Int) {
   }
 
   def hasSpentMinTotal(): Either[POSError, Boolean] = {
+    ???
+  }
+
+  def removeCurrentLoyaltyCard():Either[POSError, Boolean] = {
     ???
   }
 
