@@ -42,7 +42,7 @@ case class Bill(
     helpSumBill(order)
   }
 
-  def applyServiceCharge():Double = {
+  def g():Double = {
     // if drinks loyaly then bill = apply drinks
     // if discount loyal = apply discount loyalty
     // else = sum bill
