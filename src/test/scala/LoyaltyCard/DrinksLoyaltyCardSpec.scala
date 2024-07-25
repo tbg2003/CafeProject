@@ -72,7 +72,7 @@ class DrinksLoyaltyCardSpec extends AnyWordSpec with Matchers{
         loyaltyCard.checkEnoughStamps() shouldBe Left(POSError.InsufficientStamps(s"Not enough stamps, you need 10"))
       }
     }
-    "return a Left" when {
+    "return a Right" when {
       "Card has not been stamped today and currently has 9 stamps" in {
         val cardWith9Stamps:List[LocalDate] = List(date1, date2, date3, date4, date5, date6, date7, date8, date9)
         val loyaltyCard:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
