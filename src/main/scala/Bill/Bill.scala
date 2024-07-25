@@ -1,3 +1,5 @@
+package Bill
+
 import LoyaltyCard.LoyaltyCard
 import MenuStuff.{ItemType, MenuItem}
 
