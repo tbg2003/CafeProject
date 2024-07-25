@@ -22,13 +22,36 @@ class CustomerSpec extends AnyWordSpec with Matchers {
       assert(customer.getTotalSpent() == 200)
     }
   }
-  "getTotalPurchases"
-  "newOrder"
-  "applyForLoyaltyCard"
-  "applyForDrinksLoyaltyCard"
-  "applyForDiscountLoyaltyCard"
-  "isValidAge"
-  "hasLoyaltyCard"
+
+  "getTotalPurchases" should {
+    "return the current total purchases" in {
+      val customer:Customer = Customer(1, "John Doe", 18, totalPurchases = 10)
+      assert(customer.getTotalPurchases() == 10)
+    }
+  }
+
+  "newOrder" should {
+    "update total spent with purchase amount, add 1 to total purchases" in {
+      val customer:Customer = Customer(1, "John Doe", 18)
+      assert(customer.newOrder(10.00) == (10.00, 1))
+    }
+  }
+
+  "isValidAge" should {
+    "return a Left" when{
+      "customer's age doesn't meet valid age requirement" in {
+        val customer:Customer = Customer(1, "John Doe", invalidAge)
+        customer.isValidAge() shouldBe Left(POSError.InvalidAge("Customer is too young"))
+      }
+    }
+    "return a Right" when{
+      "customer's age meets valid age requirement" in {
+        val customer: Customer = Customer(1, "John Doe", validAge)
+        customer.isValidAge() shouldBe Right(true)
+      }
+    }
+  }
+
   "hasMadeMinPurchases" should {
     "return a Left" when{
       "customer's total purchases is under 5" in {
@@ -46,8 +69,19 @@ class CustomerSpec extends AnyWordSpec with Matchers {
         customer.hasMadeMinPurchases() shouldBe Right(true)
       }
     }
-  }// should return left when invalid min purchases in // should return right when valid min purchases in
+  }
+
+
+  "applyForLoyaltyCard"
+  "applyForDrinksLoyaltyCard"
+  "applyForDiscountLoyaltyCard"
+  "hasLoyaltyCard"
   "hasSpentMinTotal"
   "removeCurrentLoyaltyCard"
+
+
+
+
+
 
 }
