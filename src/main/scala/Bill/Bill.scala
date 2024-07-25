@@ -67,7 +67,7 @@ case class Bill(
   def removeCheapestDrinkCost(billToDiscount:Double):Double = {
     val listNotDrinks:List[MenuItem] = order.filterNot(_.itemType == ColdDrink).filterNot(_.itemType == HotDrink)
     val listDrinks:List[MenuItem] = order.diff(listNotDrinks)
-    val discountedBill:Double = if (!listDrinks.isEmpty){
+    val discountedBill:Double = if (listDrinks.nonEmpty){
       val cheapestDrinkCost:Double = listDrinks.minBy(_.price).price
       billToDiscount - cheapestDrinkCost
     }

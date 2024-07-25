@@ -113,7 +113,7 @@ class BillSpec extends AnyWordSpec with Matchers{
     val loyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
     val loyaltyCardWith5Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith5Stamps))
     "return true" when{
-      "customer gets 10th stamp"
+      "customer has drinks discount card and gets 10th stamp" in {}
     }
   }
 
