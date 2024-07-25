@@ -1,10 +1,13 @@
 package Customer
 
 
+import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard}
 import Utils.POSError
-import Utils.POSError.InvalidMinSpendTotal
+import Utils.POSError.{AlreadyHasCard, InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
+
+import java.time.LocalDate
 
 class CustomerSpec extends AnyWordSpec with Matchers {
 
@@ -15,6 +18,13 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   implicit val validTotalSpend150:Double = 150.00
   implicit val totalPurchasesUnder5:Int = 2
   implicit val totalPurchasesOver5:Int = 8
+
+  val date1: LocalDate = LocalDate.of(2024, 5, 1)
+  val date2: LocalDate = LocalDate.of(2024, 3, 2)
+  val date3: LocalDate = LocalDate.of(2024, 5, 3)
+  val date4: LocalDate = LocalDate.of(2024, 6, 4)
+  val date5: LocalDate = LocalDate.of(2024, 5, 5)
+  val fourStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4)))
 
 //  val customer:Customer = Customer()
 
@@ -92,11 +102,70 @@ class CustomerSpec extends AnyWordSpec with Matchers {
       }
     }
   }
+  "applyForDrinksLoyaltyCard" should {
+    "return Left" when{
+      "the age is less than 18" in {
+        val customer = Customer(3, "John Doe", invalidAge, validTotalSpend150, totalPurchasesOver5)
+        customer.applyForDrinksLoyaltyCard() shouldBe  Left(InvalidAge("Customer is too young"))
+      }
+    }
+    "return Left" when{
+      "the customer already has  LoyaltyCard" in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        customer.setLoyaltyCard(Some(fourStampDiscountLoyaltyCard))
+        customer.applyForDrinksLoyaltyCard() shouldBe  Left(AlreadyHasCard("You already have a loyalty card"))
+      }
+    }
+    "return Left" when{
+      "the minimum purchases is less than 5" in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesUnder5)
+        customer.applyForDrinksLoyaltyCard() shouldBe  Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
+      }
+    }
+    "return Right" when{
+      "the customer is of valid age, has no loyalty card and has made minimum purchases " in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
+        //customer.setLoyaltyCard()
+        customer.applyForDrinksLoyaltyCard() shouldBe  Right(DrinksLoyaltyCard(None))
+      }
+    }
+  }
 
+  "applyForDiscountLoyaltyCard" should {
+    "return Left" when{
+      "the age is less than 18" in {
+        val customer = Customer(3, "John Doe", invalidAge, validTotalSpend150, totalPurchasesOver5)
+        customer.applyForDrinksLoyaltyCard() shouldBe  Left(InvalidAge("Customer is too young"))
+      }
+    }
+    "return Left" when{
+      "the customer already has  LoyaltyCard" in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        customer.setLoyaltyCard(Some(fourStampDiscountLoyaltyCard))
+        customer.applyForDrinksLoyaltyCard() shouldBe  Left(AlreadyHasCard("You already have a loyalty card"))
+      }
+    }
+    "return Left" when{
+      "the minimum purchases is less than 5" in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesUnder5)
+        customer.applyForDrinksLoyaltyCard() shouldBe  Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
+      }
+    }
+    "return Left" when{
+      "the minimum purchases is less than 5" in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesUnder5)
+        customer.applyForDrinksLoyaltyCard() shouldBe  Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
+      }
+    }
+    "return Right" when{
+      "the customer is of valid age, has no loyalty card and has made minimum purchases " in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
+        //customer.setLoyaltyCard()
+        customer.applyForDrinksLoyaltyCard() shouldBe  Right(DrinksLoyaltyCard(None))
+      }
+    }
+  }
 
-  "applyForLoyaltyCard"
-  "applyForDrinksLoyaltyCard"
-  "applyForDiscountLoyaltyCard"
   "hasLoyaltyCard"
   "hasSpentMinTotal"
   "removeCurrentLoyaltyCard"
