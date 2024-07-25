@@ -1,6 +1,6 @@
-package MenuItems
+package MenuStuff
 
-sealed trait ItemType
+trait ItemType
 
 object ItemType{
   case object Special extends ItemType

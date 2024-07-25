@@ -1,4 +1,4 @@
-package MenuItems
+package MenuStuff
 
 case class MenuItem(
                      name: String,
