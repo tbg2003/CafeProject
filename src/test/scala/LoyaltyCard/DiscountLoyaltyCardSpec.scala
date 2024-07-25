@@ -21,9 +21,17 @@ class DiscountLoyaltyCardSpec extends AnyWordSpec with Matchers {
   val date10: LocalDate = LocalDate.of(2024, 5, 10)
   val today: LocalDate = LocalDate.now()
 
+
+  val emptyStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List()))
   val fourStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4)))
+  val twoStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2)))
   val fiveStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
-  val discountLoyaltyCardWithTodayDate: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, today)))
+  val sixStampDiscountLoyaltyCardWithTodayDate: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, today)))
+  val eightStampedDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7, date8)))
+  val todayStampedDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, today)))
+
+
+
 
 
   "getCustomersStarts " should {
@@ -58,8 +66,33 @@ class DiscountLoyaltyCardSpec extends AnyWordSpec with Matchers {
     }
     "return Left" when {
       "the stamp has today date" in {
-        discountLoyaltyCardWithTodayDate.addStar(35) shouldBe(Left(InvalidStamp("Stars Already Added")))
+        todayStampedDiscountLoyaltyCard.addStar(20) shouldBe(Left(InvalidStamp("Stars Already Added Stamped today")))
       }
+    }
+    "return Left" when {
+      "the stamp length is 8" in {
+      eightStampedDiscountLoyaltyCard.addStar(100) shouldBe(Left(InvalidStamp("No more stars can be added")))
+      }
+    }
+    "return Right" when {
+      "the stamp length is less than 8 and not stamped today" in {
+        fiveStampDiscountLoyaltyCard.addStar(100) shouldBe Right((sixStampDiscountLoyaltyCardWithTodayDate.customerStars))
+      }
+    }
+  }
+
+  "getDiscount" should {
+    "return 0" in {
+      emptyStampDiscountLoyaltyCard.getDiscount() shouldBe 0
+    }
+    "return 0.04" in {
+      twoStampDiscountLoyaltyCard.getDiscount() shouldBe 0.04
+    }
+    "return 0.08 " in {
+      fourStampDiscountLoyaltyCard.getDiscount() shouldBe 0.08
+    }
+    "return 0.16" in {
+      eightStampedDiscountLoyaltyCard.getDiscount() shouldBe 0.16
     }
   }
 
