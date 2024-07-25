@@ -24,6 +24,7 @@ case class DrinksLoyaltyCard(customerStamps:Option[List[LocalDate]]) extends Loy
     else Left(POSError.InsufficientStamps(s"Not enough stamps, you need 10"))
   }
 
+  // ONLY CALL THIS ONE
   def getFreeDrink():Either[POSError, Boolean] = {
     for{
       _ <- addStamp()

@@ -3,10 +3,12 @@ package Bill
 import LoyaltyCard.LoyaltyCard
 import MenuStuff.{ItemType, MenuItem}
 
+import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 
 
-case class Bill(order:List[MenuItem],
+case class Bill(
+                order:List[MenuItem],
                 payService:Boolean,
                 loyaltyCard:Option[LoyaltyCard],
                 extraTip:Option[Double]){
@@ -18,6 +20,7 @@ case class Bill(order:List[MenuItem],
   }
 
   def sumUpBillSpecials():Double = {
+    @tailrec
     def helpSumBillSpecials(order:List[MenuItem], acc:Double = 0):Double = {
       order match {
         case Nil => acc
@@ -29,6 +32,7 @@ case class Bill(order:List[MenuItem],
   }
 
   def sumUpBill():Double = {
+    @tailrec
     def helpSumBill(order:List[MenuItem], acc:Double = 0):Double = {
       order match {
         case Nil => acc
@@ -51,8 +55,9 @@ case class Bill(order:List[MenuItem],
   def applyDrinksLoyalty():Double = {
     // sum up items
     // if cold drink or hot drink in item types
-    //    if get free drink
+    //    if get free drink is Right
     //        remove a drink price from bill
+    //    else print Left error
     // return new bill price
     ???
   }
