@@ -11,4 +11,5 @@ object POSError{
   case class InvalidMinPurchases(message:String) extends POSError
   case class InvalidMinSpendTotal(message:String) extends POSError
   case class InvalidRemovingCard(message:String) extends POSError
+
 }

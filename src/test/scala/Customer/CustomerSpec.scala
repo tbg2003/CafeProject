@@ -1,12 +1,8 @@
 package Customer
 
 
-import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard}
+import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCardType}
 import Utils.POSError.{AlreadyHasCard, InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal}
-import LoyaltyCard.DiscountLoyaltyCard
-import LoyaltyCard.LoyaltyCardType.DrinksLoyalty
-import Utils.POSError
-import Utils.POSError.{AlreadyHasCard, InvalidMinSpendTotal}
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -16,12 +12,14 @@ class CustomerSpec extends AnyWordSpec with Matchers {
 
   implicit val invalidAge: Int = 17
   implicit val validAge: Int = 19
+  implicit val exactly18: Int = 18
   implicit val invalidTotalSpend: Double = 100.00
   implicit val validTotalSpend: Double = 160.00
   implicit val validTotalSpend150: Double = 150.00
   implicit val totalPurchasesUnder5: Int = 2
   implicit val totalPurchasesOver5: Int = 8
   implicit val emptyStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List()))
+  implicit val emptyDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List()))
 
 
   val date1: LocalDate = LocalDate.of(2024, 5, 1)
@@ -66,6 +64,27 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     }
   }
 
+  "setLoyaltyCard" should {
+    "return None" when {
+      " there is no loyalty card assigned given as input parameter" in {
+        val customer: Customer = Customer(1, "John Doe", 18)
+        customer.setLoyaltyCard(None) shouldBe None
+      }
+    }
+    "return discount loyalty card" when {
+      "discount loyalty card is given as input parameter" in {
+        val customer: Customer = Customer(1, "John Doe", 18)
+        customer.setLoyaltyCard(Some(emptyStampDiscountLoyaltyCard)) shouldBe Some(emptyStampDiscountLoyaltyCard)
+      }
+    }
+    "return discount loyalty card" when {
+      "drinks loyalty card is given as input parameter" in {
+        val customer: Customer = Customer(1, "John Doe", 18)
+        customer.setLoyaltyCard(Some(emptyDrinksLoyaltyCard)) shouldBe Some(emptyDrinksLoyaltyCard)
+      }
+    }
+  }
+
   "newOrder" should {
     "update total spent with purchase amount, add 1 to total purchases" in {
       val customer: Customer = Customer(1, "John Doe", 18)
@@ -98,6 +117,12 @@ class CustomerSpec extends AnyWordSpec with Matchers {
     "return a Right" when {
       "customer's age meets valid age requirement" in {
         val customer: Customer = Customer(1, "John Doe", validAge)
+        customer.isValidAge() shouldBe Right(true)
+      }
+    }
+    "return a Right" when {
+      "customer's  is exactly 18" in {
+        val customer: Customer = Customer(1, "John Doe", exactly18)
         customer.isValidAge() shouldBe Right(true)
       }
     }
@@ -222,6 +247,34 @@ class CustomerSpec extends AnyWordSpec with Matchers {
         }
       }
 
+    }
+  }
+  "applyForLoyaltyCard" should {
+    "return Right"  when{
+      "selected LoyaltyCard is DrinksLoyaltyCard"  in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        customer.applyForLoyaltyCard(LoyaltyCardType.DrinksLoyalty) shouldBe(Right(DrinksLoyaltyCard(None)))
+      }
+    }
+    "return Right"  when{
+      "selected LoyaltyCard is DiscountLoyaltyCard"  in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        customer.applyForLoyaltyCard(LoyaltyCardType.DiscountLoyalty) shouldBe(Right(DiscountLoyaltyCard(None)))
+      }
+    }
+    "return Left"  when{
+      "customer already has a DiscountLoyalty card"  in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        customer.setLoyaltyCard(Some(fourStampDiscountLoyaltyCard))
+        customer.applyForLoyaltyCard(LoyaltyCardType.DiscountLoyalty) shouldBe(Left(AlreadyHasCard("You already have a loyalty card")))
+      }
+    }
+    "return Left"  when{
+      "customer already has a DrinksLoyalty card"  in {
+        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        customer.setLoyaltyCard(Some(drinksLoyaltyCard))
+        customer.applyForLoyaltyCard(LoyaltyCardType.DiscountLoyalty) shouldBe(Left(AlreadyHasCard("You already have a loyalty card")))
+      }
     }
 
 
