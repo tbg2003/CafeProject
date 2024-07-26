@@ -13,13 +13,12 @@ class MenuSpec extends AnyWordSpec with Matchers{
   val Special :MenuItem = MenuItem("Special", 25.00, ItemType.Special)
   val ColdDrink :MenuItem = MenuItem("Cold Drink", 3.00, ItemType.ColdDrink)
   val HotDrink :MenuItem = MenuItem("Hot Drink", 2.00, ItemType.HotDrink)
-
   val menuItems:List[MenuItem] = List(ColdFood, HotFood, Special, ColdDrink, HotDrink)
 
-  val menu:Menu = Menu(menuItems)
 
   "getMenu" should {
     "return list of item names and price on menu" in {
+      val menu:Menu = Menu(menuItems)
       assert(menu.getMenu == List(ColdFood, HotFood, Special, ColdDrink, HotDrink))
     }
   }
@@ -29,12 +28,14 @@ class MenuSpec extends AnyWordSpec with Matchers{
     val newSpecialItem:MenuItem = MenuItem("New Special", 25.00, ItemType.Special)
     "return a Left" when{
       "Item is not special" in {
+        val menu:Menu = Menu(menuItems)
         menu.addSpecialItem(newNotSpecialItem) shouldBe Left(POSError.InvalidItemType("New Not Special is not a special item"))
       }
 
     }
     "return a Right" when{
       "Item is special" in {
+        val menu:Menu = Menu(menuItems)
         menu.addSpecialItem(newSpecialItem) shouldBe Right(List(ColdFood, HotFood, Special, ColdDrink, HotDrink, newSpecialItem))
       }
     }
@@ -44,11 +45,13 @@ class MenuSpec extends AnyWordSpec with Matchers{
     val newNotSpecialItem: MenuItem = MenuItem("New Not Special", 25.00, ItemType.HotFood)
     "return a Left" when{
       "Item is not special" in {
+        val menu:Menu = Menu(menuItems)
         menu.removeSpecialItem(newNotSpecialItem) shouldBe Left(POSError.InvalidItemType("New Not Special is not a special item"))
       }
     }
     "return a Right" when{
       "Item is special" in {
+        val menu:Menu = Menu(menuItems)
         menu.removeSpecialItem(Special) shouldBe Right(List(ColdFood, HotFood, ColdDrink, HotDrink))
       }
     }
