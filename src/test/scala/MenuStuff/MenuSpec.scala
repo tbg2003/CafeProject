@@ -26,6 +26,7 @@ class MenuSpec extends AnyWordSpec with Matchers{
   "addSpecialItem" should {
     val newNotSpecialItem: MenuItem = MenuItem("New Not Special", 25.00, ItemType.HotFood)
     val newSpecialItem:MenuItem = MenuItem("New Special", 25.00, ItemType.Special)
+    val newSpecialItem2:MenuItem = MenuItem("New Special 2", 25.00, ItemType.Special)
     "return a Left" when{
       "Item is not special" in {
         val menu:Menu = Menu(menuItems)
@@ -37,6 +38,11 @@ class MenuSpec extends AnyWordSpec with Matchers{
       "Item is special" in {
         val menu:Menu = Menu(menuItems)
         menu.addSpecialItem(newSpecialItem) shouldBe Right(List(ColdFood, HotFood, Special, ColdDrink, HotDrink, newSpecialItem))
+      }
+      "Both items are special" in {
+        val menu:Menu = Menu(menuItems)
+        menu.addSpecialItem(newSpecialItem) shouldBe Right(List(ColdFood, HotFood, Special, ColdDrink, HotDrink, newSpecialItem))
+        menu.addSpecialItem(newSpecialItem2) shouldBe Right(List(ColdFood, HotFood, Special, ColdDrink, HotDrink, newSpecialItem, newSpecialItem2))
       }
     }
   }
