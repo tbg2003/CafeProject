@@ -2,6 +2,8 @@ package Bill
 
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard}
 import MenuStuff.{ItemType, MenuItem}
+import Utils.CurrencyType
+import Utils.CurrencyType._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -296,6 +298,32 @@ class BillSpec extends AnyWordSpec with Matchers{
       "customer gives negative tip" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = Some(-5))
         billSpecial.getBillTotal shouldBe 65
+      }
+    }
+    "return amount in specified currency, default GBP" when {
+      "currency is not given" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None)
+        billSpecial.getBillTotal shouldBe 65
+      }
+      "currency is GBP" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.GBP)
+        billSpecial.getBillTotal shouldBe 65
+      }
+      "currency is EUR" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.EUR)
+        billSpecial.getBillTotal shouldBe 77.35
+      }
+      "currency is YEN" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.YEN)
+        billSpecial.getBillTotal shouldBe 12905.1
+      }
+      "currency is USD" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.USD)
+        billSpecial.getBillTotal shouldBe 83.85
+      }
+      "currency is INR" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.INR)
+        billSpecial.getBillTotal shouldBe 7002.45
       }
     }
   }
