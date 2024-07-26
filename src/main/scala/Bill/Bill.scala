@@ -3,6 +3,7 @@ package Bill
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCard}
 import MenuStuff.ItemType.{ColdDrink, HotDrink}
 import MenuStuff.{ItemType, MenuItem}
+import Utils.CurrencyType
 
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
@@ -12,7 +13,8 @@ case class Bill(
                 order:List[MenuItem],
                 payService:Boolean,
                 loyaltyCard:Option[LoyaltyCard],
-                extraTip:Option[Double]){
+                extraTip:Option[Double],
+                currency: CurrencyType = CurrencyType.GBP){
 
   def getOrderItemTypes():List[ItemType] = {
     val itemTypeList:ListBuffer[ItemType] = ListBuffer()
@@ -54,7 +56,8 @@ case class Bill(
       case Some(tip) => if (tip > 0){billWithService + tip} else billWithService
       case None => billWithService
     }
-    billTotal
+    val ConvertedBillTotal:Double = currency.convertTo(billTotal)
+    "%.2f".format(ConvertedBillTotal).toDouble
   }
 
   def getFreeDrink(card: DrinksLoyaltyCard):Boolean = {
@@ -109,7 +112,6 @@ case class Bill(
   }
 
   def getServiceCharge():Double={
-
     val orderItemTypes:List[ItemType] = getOrderItemTypes()
     val serviceCharge:Double =
       if (payService){
