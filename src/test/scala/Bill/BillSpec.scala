@@ -368,6 +368,11 @@ class BillSpec extends AnyWordSpec with Matchers{
         val billAtHappyHour: Bill =Bill(customer, mixedOrderWithSpecial, payService = false, loyaltyCard = Some(zeroStampDiscountLoyaltyCard), extraTip = None)
         billAtHappyHour.getBillTotal(happyHourTime) shouldBe 52.5
       }
+      "the time is happyHour 6pm and has a valid discount loyalty card with no stars and not valid employee" in {
+        val zeroStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(None)
+        val billAtHappyHour: Bill =Bill(invalidEmployee, mixedOrderWithSpecial, payService = false, loyaltyCard = Some(zeroStampDiscountLoyaltyCard), extraTip = None)
+        billAtHappyHour.getBillTotal(happyHourTime) shouldBe 52.5
+      }
     }
 
     "reduce cost of all drinks by 50% and food by 4%" when {
@@ -388,6 +393,19 @@ class BillSpec extends AnyWordSpec with Matchers{
         val fiveStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
         val billAtHappyHour: Bill =Bill(validEmployee, mixedOrderWithSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
         billAtHappyHour.getBillTotal(happyHourTime) shouldBe 48.5
+      }
+    }
+
+    "reduce cost of all drinks by 50% and food by 14%" when {
+      "the time is happy hour and customer has discount loyalty card with 7 stamps" in{
+        val sevenStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7)))
+        val billAtHappyHour: Bill =Bill(invalidEmployee, mixedOrderWithSpecial, payService = false, loyaltyCard = Some(sevenStampDiscountLoyaltyCard), extraTip = None)
+        billAtHappyHour.getBillTotal(happyHourTime) shouldBe 49.7
+      }
+      "the time is happy hour and customer has discount loyalty card with 2 stamps and is valid employee" in{
+        val twoStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2)))
+        val billAtHappyHour: Bill =Bill(validEmployee, mixedOrderWithSpecial, payService = false, loyaltyCard = Some(twoStampDiscountLoyaltyCard), extraTip = None)
+        billAtHappyHour.getBillTotal(happyHourTime) shouldBe 49.7
       }
     }
   }
