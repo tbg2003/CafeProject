@@ -1,6 +1,6 @@
 package LoyaltyCard
 
-import Utils.POSError
+import Error.POSError
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

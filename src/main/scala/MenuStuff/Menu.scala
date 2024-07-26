@@ -1,5 +1,5 @@
 package MenuStuff
-import Utils.POSError
+import Error.POSError
 
 case class Menu(
                  menuItems: List[MenuItem]

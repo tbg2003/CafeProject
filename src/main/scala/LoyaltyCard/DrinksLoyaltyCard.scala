@@ -1,6 +1,6 @@
 package LoyaltyCard
 
-import Utils.POSError
+import Error.POSError
 
 import java.time.LocalDate
 

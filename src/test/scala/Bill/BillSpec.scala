@@ -3,8 +3,8 @@ package Bill
 import Customer.{AirportEmployee, Customer}
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard}
 import MenuStuff.{ItemType, MenuItem}
-import Utils.CurrencyType
-import Utils.CurrencyType._
+import Error.CurrencyType
+import Error.CurrencyType._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
@@ -47,6 +47,7 @@ class BillSpec extends AnyWordSpec with Matchers{
   val moreThanSixMonthsOldDate: LocalDate = LocalDate.of(2023, 1, 2)
   val lessThanSixMonthsDate: LocalDate = LocalDate.of(2024, 5, 1)
   val customer: Customer = new Customer(1, "John Doe", 18, totalSpent = 200.0, totalPurchases = 20)
+
   val validEmployee: AirportEmployee = new AirportEmployee(id = 1, fullName = "John Doe", age = 28, totalSpent = 100, totalPurchases = 100, loyaltyCard = None,
     startDate = moreThanSixMonthsOldDate)
   val invalidEmployee: AirportEmployee = new AirportEmployee(id = 1, fullName = "John Doe", age = 28, totalSpent = 100, totalPurchases = 100, loyaltyCard = None,

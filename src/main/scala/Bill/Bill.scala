@@ -4,7 +4,7 @@ import Customer._
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCard}
 import MenuStuff.ItemType.{ColdDrink, HotDrink}
 import MenuStuff.{ItemType, MenuItem}
-import Utils.{CurrencyType, POSError}
+import Error.{CurrencyType, POSError}
 
 import java.time.LocalDateTime
 import scala.annotation.tailrec

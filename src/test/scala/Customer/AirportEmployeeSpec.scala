@@ -1,7 +1,7 @@
 package Customer
 
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard}
-import Utils.POSError.InvalidServicePeriod
+import Error.POSError.InvalidServicePeriod
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

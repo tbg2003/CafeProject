@@ -1,4 +1,4 @@
-package Utils
+package Error
 
 trait POSError {def message:String}
 

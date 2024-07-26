@@ -1,7 +1,7 @@
 package LoyaltyCard
 
-import Utils.POSError
-import Utils.POSError.InvalidStamp
+import Error.POSError
+import Error.POSError.InvalidStamp
 
 import java.time.LocalDate
 
