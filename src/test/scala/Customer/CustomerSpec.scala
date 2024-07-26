@@ -33,18 +33,18 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   implicit val fourStampDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4)))
 
 
-  //  val customer:Customer = Customer()
+  //  val customer:Customer = new Customer()
 
   "getTotalSpent" should {
     "return the current total spent" in {
-      val customer: Customer = Customer(1, "John Doe", 18, totalSpent = 200)
+      val customer: Customer = new Customer(1, "John Doe", 18, totalSpent = 200)
       assert(customer.getTotalSpent() == 200)
     }
   }
 
   "getTotalPurchases" should {
     "return the current total purchases" in {
-      val customer: Customer = Customer(1, "John Doe", 18, totalPurchases = 10)
+      val customer: Customer = new Customer(1, "John Doe", 18, totalPurchases = 10)
       assert(customer.getTotalPurchases() == 10)
     }
   }
@@ -52,13 +52,13 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "getLoyaltyCard" should {
     "return None" when {
       " there is no loyalty card assigned" in {
-        val customer: Customer = Customer(1, "John Doe", 18)
+        val customer: Customer = new Customer(1, "John Doe", 18)
         customer.getLoyaltyCard() shouldBe None
       }
     }
     "return discount loyalty card" when {
       "discount loyalty card is assigned" in {
-        val customer: Customer = Customer(1, "John Doe", 18, loyaltyCard = Some(emptyStampDiscountLoyaltyCard))
+        val customer: Customer = new Customer(1, "John Doe", 18, loyaltyCard = Some(emptyStampDiscountLoyaltyCard))
         customer.getLoyaltyCard() shouldBe Some(emptyStampDiscountLoyaltyCard)
       }
     }
@@ -67,19 +67,19 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "setLoyaltyCard" should {
     "return None" when {
       " there is no loyalty card assigned given as input parameter" in {
-        val customer: Customer = Customer(1, "John Doe", 18)
+        val customer: Customer = new Customer(1, "John Doe", 18)
         customer.setLoyaltyCard(None) shouldBe None
       }
     }
     "return discount loyalty card" when {
       "discount loyalty card is given as input parameter" in {
-        val customer: Customer = Customer(1, "John Doe", 18)
+        val customer: Customer = new Customer(1, "John Doe", 18)
         customer.setLoyaltyCard(Some(emptyStampDiscountLoyaltyCard)) shouldBe Some(emptyStampDiscountLoyaltyCard)
       }
     }
     "return discount loyalty card" when {
       "drinks loyalty card is given as input parameter" in {
-        val customer: Customer = Customer(1, "John Doe", 18)
+        val customer: Customer = new Customer(1, "John Doe", 18)
         customer.setLoyaltyCard(Some(emptyDrinksLoyaltyCard)) shouldBe Some(emptyDrinksLoyaltyCard)
       }
     }
@@ -87,7 +87,7 @@ class CustomerSpec extends AnyWordSpec with Matchers {
 
   "newOrder" should {
     "update total spent with purchase amount, add 1 to total purchases" in {
-      val customer: Customer = Customer(1, "John Doe", 18)
+      val customer: Customer = new Customer(1, "John Doe", 18)
       assert(customer.newOrder(10.00) == (10.00, 1))
     }
   }
@@ -95,13 +95,13 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "hasLoyaltyCard" should {
     "return left" when {
       "when customer has loyalty card" in {
-        val customer: Customer = Customer(1, "John Doe", 18, loyaltyCard = Some(emptyStampDiscountLoyaltyCard))
+        val customer: Customer = new Customer(1, "John Doe", 18, loyaltyCard = Some(emptyStampDiscountLoyaltyCard))
         customer.hasNoLoyaltyCard() shouldBe Left(AlreadyHasCard("You already have a loyalty card"))
       }
     }
     "return right" when {
       "when customer has no loyalty card" in {
-        val customer: Customer = Customer(1, "John Doe", 18)
+        val customer: Customer = new Customer(1, "John Doe", 18)
         customer.hasNoLoyaltyCard() shouldBe Right(true)
       }
     }
@@ -110,19 +110,19 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "isValidAge" should {
     "return a Left" when {
       "customer's age doesn't meet valid age requirement" in {
-        val customer: Customer = Customer(1, "John Doe", invalidAge)
+        val customer: Customer = new Customer(1, "John Doe", invalidAge)
         customer.isValidAge() shouldBe Left(InvalidAge("Customer is too young"))
       }
     }
     "return a Right" when {
       "customer's age meets valid age requirement" in {
-        val customer: Customer = Customer(1, "John Doe", validAge)
+        val customer: Customer = new Customer(1, "John Doe", validAge)
         customer.isValidAge() shouldBe Right(true)
       }
     }
     "return a Right" when {
       "customer's  is exactly 18" in {
-        val customer: Customer = Customer(1, "John Doe", exactly18)
+        val customer: Customer = new Customer(1, "John Doe", exactly18)
         customer.isValidAge() shouldBe Right(true)
       }
     }
@@ -131,17 +131,17 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "hasMadeMinPurchases" should {
     "return a Left" when {
       "customer's total purchases is under 5" in {
-        val customer: Customer = Customer(1, "John Doe", validAge, validTotalSpend, totalPurchasesUnder5)
+        val customer: Customer = new Customer(1, "John Doe", validAge, validTotalSpend, totalPurchasesUnder5)
         customer.hasMadeMinPurchases() shouldBe Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
       }
     }
     "return a Right" when {
       "customer's total purchases is over 5" in {
-        val customer: Customer = Customer(1, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
+        val customer: Customer = new Customer(1, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
         customer.hasMadeMinPurchases() shouldBe Right(true)
       }
       "customer's total purchases is 5" in {
-        val customer: Customer = Customer(1, "John Doe", validAge, validTotalSpend, 5)
+        val customer: Customer = new Customer(1, "John Doe", validAge, validTotalSpend, 5)
         customer.hasMadeMinPurchases() shouldBe Right(true)
       }
     }
@@ -149,19 +149,19 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "hasSpentMinTotal" should {
     "return a Left" when {
       "customers total purchases is less than 150" in {
-        val customer = Customer(3, "John Doe", validAge, invalidTotalSpend, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, invalidTotalSpend, totalPurchasesOver5)
         customer.hasSpentMinTotal() shouldBe Left(InvalidMinSpendTotal("Minimum spent less than 150"))
       }
     }
     "return a Right" when {
       "customers total purchases is greater than 150" in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
         customer.hasSpentMinTotal() shouldBe Right(true)
       }
     }
     "return a Right" when {
       "customers total purchases is exactly 150" in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
         customer.hasSpentMinTotal() shouldBe Right(true)
       }
     }
@@ -169,26 +169,26 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "applyForDrinksLoyaltyCard" should {
     "return Left" when {
       "the age is less than 18" in {
-        val customer = Customer(3, "John Doe", invalidAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", invalidAge, validTotalSpend150, totalPurchasesOver5)
         customer.applyForDrinksLoyaltyCard() shouldBe Left(InvalidAge("Customer is too young"))
       }
     }
     "return Left" when {
       "the customer already has  LoyaltyCard" in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
         customer.setLoyaltyCard(Some(fourStampDiscountLoyaltyCard))
         customer.applyForDrinksLoyaltyCard() shouldBe Left(AlreadyHasCard("You already have a loyalty card"))
       }
     }
     "return Left" when {
       "the minimum purchases is less than 5" in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesUnder5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesUnder5)
         customer.applyForDrinksLoyaltyCard() shouldBe Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
       }
     }
     "return Right" when {
       "the customer is of valid age, has no loyalty card and has made minimum purchases " in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
         //customer.setLoyaltyCard()
         customer.applyForDrinksLoyaltyCard() shouldBe Right(DrinksLoyaltyCard(None))
       }
@@ -199,33 +199,33 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "applyForDiscountLoyaltyCard" should {
     "return Left" when {
       "the age is less than 18" in {
-        val customer = Customer(3, "John Doe", invalidAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", invalidAge, validTotalSpend150, totalPurchasesOver5)
         customer.applyForDiscountLoyaltyCard() shouldBe Left(InvalidAge("Customer is too young"))
       }
     }
     "return Left" when {
       "the customer already have a  LoyaltyCard" in {
-        val customer = Customer(4, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(4, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
         customer.setLoyaltyCard(Some(fourStampDiscountLoyaltyCard))
         customer.applyForDiscountLoyaltyCard() shouldBe Left(AlreadyHasCard("You already have a loyalty card"))
       }
     }
     "return Left" when {
       "the minimum purchases is less than 5" in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesUnder5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesUnder5)
         customer.applyForDiscountLoyaltyCard() shouldBe Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
       }
     }
     "return Left" when {
       "the minimum spent is less than 150" in {
-        val customer = Customer(3, "John Doe", validAge, invalidTotalSpend, totalPurchasesUnder5)
+        val customer = new Customer(3, "John Doe", validAge, invalidTotalSpend, totalPurchasesUnder5)
         customer.applyForDiscountLoyaltyCard() shouldBe Left(InvalidMinPurchases("Minimum purchase less than 5 times"))
       }
     }
     "return Right" when {
       "the customer is of valid age, has no loyalty card and has made minimum purchases of 5, has " +
         "spent more than or equals to 150 " in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend, totalPurchasesOver5)
         customer.applyForDrinksLoyaltyCard() shouldBe Right(DrinksLoyaltyCard(None))
       }
     }
@@ -234,14 +234,14 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "removeCurrentLoyaltyCard" should {
     "return Right" when {
       "the current DiscountLoyalty Card is removed" in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
         customer.setLoyaltyCard(Some(fourStampDiscountLoyaltyCard))
         customer.removeCurrentLoyaltyCard() shouldBe Right(true)
 
       }
       "return Right" when {
         "the current DrinksLoyalty card is not removed" in {
-          val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+          val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
           customer.setLoyaltyCard(Some(drinksLoyaltyCard))
           customer.removeCurrentLoyaltyCard() shouldBe Right(true)
         }
@@ -252,26 +252,26 @@ class CustomerSpec extends AnyWordSpec with Matchers {
   "applyForLoyaltyCard" should {
     "return Right"  when{
       "selected LoyaltyCard is DrinksLoyaltyCard"  in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
         customer.applyForLoyaltyCard(LoyaltyCardType.DrinksLoyalty) shouldBe(Right(DrinksLoyaltyCard(None)))
       }
     }
     "return Right"  when{
       "selected LoyaltyCard is DiscountLoyaltyCard"  in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
         customer.applyForLoyaltyCard(LoyaltyCardType.DiscountLoyalty) shouldBe(Right(DiscountLoyaltyCard(None)))
       }
     }
     "return Left"  when{
       "customer already has a DiscountLoyalty card"  in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
         customer.setLoyaltyCard(Some(fourStampDiscountLoyaltyCard))
         customer.applyForLoyaltyCard(LoyaltyCardType.DiscountLoyalty) shouldBe(Left(AlreadyHasCard("You already have a loyalty card")))
       }
     }
     "return Left"  when{
       "customer already has a DrinksLoyalty card"  in {
-        val customer = Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
+        val customer = new Customer(3, "John Doe", validAge, validTotalSpend150, totalPurchasesOver5)
         customer.setLoyaltyCard(Some(drinksLoyaltyCard))
         customer.applyForLoyaltyCard(LoyaltyCardType.DiscountLoyalty) shouldBe(Left(AlreadyHasCard("You already have a loyalty card")))
       }
