@@ -7,9 +7,10 @@ import Utils.CurrencyType._
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 
-import java.time.LocalDate
+import java.time.{LocalDate, LocalDateTime, LocalTime}
 
 class BillSpec extends AnyWordSpec with Matchers{
+
 
   val date1: LocalDate = LocalDate.of(2024, 5, 1)
   val date2: LocalDate = LocalDate.of(2024, 5, 2)
@@ -27,6 +28,9 @@ class BillSpec extends AnyWordSpec with Matchers{
   val validLoyaltyCardWith9Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith9Stamps))
   val loyaltyCardWith5Stamps:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWith5Stamps))
   val loyaltyCardWithTodayStamp:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(cardWithTodayStamp))
+
+  val notHappyHourTime: LocalDateTime = LocalDateTime.of(date1, LocalTime.of(12,12,12))
+  val happyHourTime: LocalDateTime = LocalDateTime.of(LocalDate.now(), LocalTime.of(18,0,0))
 
   // totals price 16
   val ColdFood :MenuItem = MenuItem("Cold Food",1.00, ItemType.ColdFood)
@@ -201,6 +205,7 @@ class BillSpec extends AnyWordSpec with Matchers{
     val cheapestColdDrink5 :MenuItem = MenuItem("Cold Drink", 5.00, ItemType.ColdDrink)
     val HotDrink10 :MenuItem = MenuItem("Hot Drink", 10.00, ItemType.HotDrink)
     // total 65
+    // drinks 25 food 20 special 20
     val mixedOrderWithSpecial:List[MenuItem] = List(ColdFood10, HotFood10, Special20, ColdDrink10, cheapestColdDrink5, HotDrink10)
     // total 45
     val mixedOrderWithOutSpecial:List[MenuItem] = List(ColdFood10, HotFood10, ColdDrink10, cheapestColdDrink5, HotDrink10)
@@ -213,14 +218,14 @@ class BillSpec extends AnyWordSpec with Matchers{
       "customer has valid drinks loyalty card and ordered drinks" in {
         val nineStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7,date8, date9)))
         val billDrinksLoyalty: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(nineStampedDrinksLoyaltyCard), extraTip = None)
-        billDrinksLoyalty.getBillTotal shouldBe 60.0
+        billDrinksLoyalty.getBillTotal(notHappyHourTime) shouldBe 60.0
       }
     }
     "reduce bill by percentage off non special items" when {
       "customer has valid discount card" in {
         val fiveStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
         val billDiscountLoyalty: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
-        billDiscountLoyalty.getBillTotal shouldBe 40.50
+        billDiscountLoyalty.getBillTotal(notHappyHourTime) shouldBe 40.50
       }
     }
     "reduce second bill (non special items) by 2% more after spending £20 on first bill" when {
@@ -228,27 +233,26 @@ class BillSpec extends AnyWordSpec with Matchers{
         val fiveStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
         val billOneTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
         val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
-        billOneTotal45.getBillTotal shouldBe 40.50
+        billOneTotal45.getBillTotal(notHappyHourTime) shouldBe 40.50
         // five stamps should now be 6
-        billTwoTotal45.getBillTotal shouldBe 39.6
+        billTwoTotal45.getBillTotal(notHappyHourTime) shouldBe 39.6
       }
     }
-
     "reduce second bill (non special items) by same amount as first " when {
       "customer has valid discount card and first bill under 20" in {
         val fiveStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5)))
         val billOneTotal15: Bill = Bill(orderTotal15, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
         val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(fiveStampDiscountLoyaltyCard), extraTip = None)
-        billOneTotal15.getBillTotal shouldBe 13.5
+        billOneTotal15.getBillTotal(notHappyHourTime) shouldBe 13.5
         // five stamps should now be 6
-        billTwoTotal45.getBillTotal shouldBe 40.5
+        billTwoTotal45.getBillTotal(notHappyHourTime) shouldBe 40.5
       }
       "customer has valid discount card with 8 stars" in {
         val eightStampedDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7, date8)))
         val billOneTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(eightStampedDiscountLoyaltyCard), extraTip = None)
         val billTwoTotal45: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(eightStampedDiscountLoyaltyCard), extraTip = None)
-        billOneTotal45.getBillTotal shouldBe 37.8
-        billTwoTotal45.getBillTotal shouldBe 37.8
+        billOneTotal45.getBillTotal(notHappyHourTime) shouldBe 37.8
+        billTwoTotal45.getBillTotal(notHappyHourTime) shouldBe 37.8
       }
     }
     "don't reduce bill" when {
@@ -256,17 +260,17 @@ class BillSpec extends AnyWordSpec with Matchers{
         val orderNoDrinks:List[MenuItem] = List(ColdFood10, HotFood10, Special20)
         val nineStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7,date8, date9)))
         val billNoDrinks: Bill = Bill(orderNoDrinks, payService = false, loyaltyCard = Some(nineStampedDrinksLoyaltyCard), None)
-        billNoDrinks.getBillTotal shouldBe 40.0
+        billNoDrinks.getBillTotal(notHappyHourTime) shouldBe 40.0
       }
       "user has ordered drinks but no 9 stamps on drinks loyalty card" in {
         val fourStampDrinksLoyaltyCard:DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4)))
         val billNo9Stamps: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(fourStampDrinksLoyaltyCard), None)
-        billNo9Stamps.getBillTotal shouldBe 65.0
+        billNo9Stamps.getBillTotal(notHappyHourTime) shouldBe 65.0
       }
       "user has valid discount loyalty card but no stars" in {
         val emptyStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(None)
         val billNoStamps: Bill = Bill(mixedOrderWithOutSpecial, payService = false, loyaltyCard = Some(emptyStampDiscountLoyaltyCard), extraTip = None)
-        billNoStamps.getBillTotal shouldBe 45.0
+        billNoStamps.getBillTotal(notHappyHourTime) shouldBe 45.0
       }
       "user has valid discount loyalty with stars but only ordered special items" in {
         val sixStampDiscountLoyaltyCardWithTodayDate:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6)))
@@ -275,56 +279,85 @@ class BillSpec extends AnyWordSpec with Matchers{
         val Special3 :MenuItem = MenuItem("Special3", 20.00, ItemType.Special)
         val onlySpecialsOrder:List[MenuItem] = List(Special1, Special2, Special3)
         val billNoStamps: Bill = Bill(onlySpecialsOrder, payService = false, loyaltyCard = Some(sixStampDiscountLoyaltyCardWithTodayDate), extraTip = None)
-        billNoStamps.getBillTotal shouldBe 60.0
+        billNoStamps.getBillTotal(notHappyHourTime) shouldBe 60.0
       }
     }
     "add relevant service charge multiplier after discount" when {
       "customer says yes to pay service charge" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = true, loyaltyCard = None, extraTip = None)
-        billSpecial.getBillTotal shouldBe 81.25
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 81.25
       }
     }
     "add tip to total cost" when {
       "customer gives optional tip" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = Some(5))
-        billSpecial.getBillTotal shouldBe 70
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 70
       }
     }
     "don't add tip to total cost" when {
       "customer doesn't give optional tip" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None)
-        billSpecial.getBillTotal shouldBe 65
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 65
       }
       "customer gives negative tip" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = Some(-5))
-        billSpecial.getBillTotal shouldBe 65
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 65
       }
     }
     "return amount in specified currency, default GBP" when {
       "currency is not given" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None)
-        billSpecial.getBillTotal shouldBe 65
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 65
       }
       "currency is GBP" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.GBP)
-        billSpecial.getBillTotal shouldBe 65
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 65
       }
       "currency is EUR" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.EUR)
-        billSpecial.getBillTotal shouldBe 77.35
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 77.35
       }
       "currency is YEN" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.YEN)
-        billSpecial.getBillTotal shouldBe 12905.1
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 12905.1
       }
       "currency is USD" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.USD)
-        billSpecial.getBillTotal shouldBe 83.85
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 83.85
       }
       "currency is INR" in {
         val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None, currency = CurrencyType.INR)
-        billSpecial.getBillTotal shouldBe 7002.45
+        billSpecial.getBillTotal(notHappyHourTime) shouldBe 7002.45
       }
+    }
+    "reduce cost of all drinks by 50%" when {
+      "the time is happyHour 6pm and does not have loyalty card" in {
+        val billAtHappyHour: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None)
+        billAtHappyHour.getBillTotal(happyHourTime) shouldBe 52.5
+      }
+      "the time is happyHour 6pm and has an invalid drinks loyalty card" in {
+        val sixStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6)))
+        val billAtHappyHour: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(sixStampedDrinksLoyaltyCard), extraTip = None)
+        billAtHappyHour.getBillTotal(happyHourTime) shouldBe 52.5
+      }
+      "the time is happyHour 6pm and has a valid drinks loyalty card" in {
+        val nineStampedDrinksLoyaltyCard: DrinksLoyaltyCard = DrinksLoyaltyCard(Some(List(date1, date2, date3, date4, date5, date6, date7,date8, date9)))
+        val billAtHappyHour: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(nineStampedDrinksLoyaltyCard), extraTip = None)
+        billAtHappyHour.getBillTotal(happyHourTime) shouldBe 52.5
+      }
+      "the time is happyHour 6pm and has a valid discount loyalty card with no stars" in {
+        val zeroStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(None)
+        val billAtHappyHour: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(zeroStampDiscountLoyaltyCard), extraTip = None)
+        billAtHappyHour.getBillTotal(happyHourTime) shouldBe 52.5
+      }
+    }
+    "reduce cost of all drinks by 50% and food by 4%" when {
+      "the time is happy hour and customer has discount loyalty card" in{
+        val twoStampDiscountLoyaltyCard:DiscountLoyaltyCard = DiscountLoyaltyCard(Some(List(date1, date2)))
+        val billAtHappyHour: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = Some(twoStampDiscountLoyaltyCard), extraTip = None)
+        billAtHappyHour.getBillTotal(happyHourTime) shouldBe 51.7
+      }
+
     }
   }
 }
