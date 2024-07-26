@@ -4,7 +4,7 @@ import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCard, Loyalty
 import Utils.POSError
 import Utils.POSError.{InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal, InvalidRemovingCard}
 
-case class Customer(id: Int,
+class Customer(id: Int,
                     fullName: String,
                     age: Int,
                     totalSpent: Double = 0,
