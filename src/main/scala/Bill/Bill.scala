@@ -1,21 +1,23 @@
 package Bill
 
+import Customer._
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCard}
 import MenuStuff.ItemType.{ColdDrink, HotDrink}
 import MenuStuff.{ItemType, MenuItem}
-import Utils.CurrencyType
+import Utils.{CurrencyType, POSError}
 
 import java.time.LocalDateTime
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 
 
-case class Bill(
+case class Bill(billableTo:Customer,
                 order:List[MenuItem],
                 payService:Boolean,
                 loyaltyCard:Option[LoyaltyCard],
                 extraTip:Option[Double],
-                currency: CurrencyType = CurrencyType.GBP){
+                currency: CurrencyType = CurrencyType.GBP
+               ){
 
   def getOrderItemTypes():List[ItemType] = {
     val itemTypeList:ListBuffer[ItemType] = ListBuffer()
@@ -131,14 +133,26 @@ case class Bill(
     billWithDiscount
   }
 
-  def applyDiscountLoyalty(card: DiscountLoyaltyCard):Double = {
+  def getEmployeeDiscount():Double = {
+    val employeeDiscount:Double = billableTo match {
+      case employee: AirportEmployee =>
+        val getsDiscount:Either[POSError, Int] = employee.validateEmployeeTenure()
+        getsDiscount match {
+          case Left(error) => 0
+          case Right(valid) => 0.1
+        }
+      case _ => 0
+    }
+    employeeDiscount
+  }
 
+
+//  REFACTOR -> add in order to discount
+  def applyDiscountLoyalty(card: DiscountLoyaltyCard):Double = {
     val costOfSpecials:Double = sumUpBillSpecials()
     val costOfOrder:Double = sumUpBill()
     val billToDiscount:Double = costOfOrder - costOfSpecials
-
-    val discountedBill = billToDiscount * (1-card.getDiscount())
-
+    val discountedBill = billToDiscount * (1-(card.getDiscount()+getEmployeeDiscount()))
     val discountedBillWithSpecials = discountedBill + costOfSpecials
     card.addStar(costOfOrder)
 
@@ -149,7 +163,7 @@ case class Bill(
   def applyDiscountOnFood(card: DiscountLoyaltyCard, notDrinksTotal:Double):Double = {
     val costOfSpecials:Double = sumUpBillSpecials()
     val billToDiscount:Double = notDrinksTotal - costOfSpecials
-    val discountedBill = billToDiscount * (1-card.getDiscount())
+    val discountedBill = billToDiscount * (1-(card.getDiscount()+getEmployeeDiscount()))
     val discountedBillWithSpecials = discountedBill + costOfSpecials
     card.addStar(notDrinksTotal)
 
