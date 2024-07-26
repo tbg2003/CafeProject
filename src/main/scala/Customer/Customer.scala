@@ -105,12 +105,11 @@ case class Customer(id: Int,
   }
 
     def removeCurrentLoyaltyCard(): Either[POSError, Boolean] = {
+      // return will always be None or Some()
       currentLoyaltyCard = setLoyaltyCard(None)
-      if(currentLoyaltyCard.isEmpty){
-        Right(true)
-      }
-      else{
-        Left(InvalidRemovingCard("Sorry the card cannot be removed"))
+      currentLoyaltyCard match {
+        case Some(_) => Left(InvalidRemovingCard("Sorry the card cannot be removed"))
+        case None => Right(true)
       }
     }
 

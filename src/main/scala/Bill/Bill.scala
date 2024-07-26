@@ -42,7 +42,7 @@ case class Bill(
     }
     helpSumBill(order)
   }
-
+// BIG ONE
   def getBillTotal:Double = {
     val billDiscounted:Double = loyaltyCard match {
       case Some(card:DrinksLoyaltyCard) => applyDrinksLoyalty(card)
@@ -51,7 +51,7 @@ case class Bill(
     }
     val billWithService:Double = billDiscounted * getServiceCharge()
     val billTotal:Double = extraTip match {
-      case Some(tip) => billWithService + tip
+      case Some(tip) => if (tip > 0){billWithService + tip} else billWithService
       case None => billWithService
     }
     billTotal
@@ -94,23 +94,22 @@ case class Bill(
   }
 
   def applyDiscountLoyalty(card: DiscountLoyaltyCard):Double = {
-    // bill = sum up items - sum up bill specials
+
     val costOfSpecials:Double = sumUpBillSpecials()
     val costOfOrder:Double = sumUpBill()
     val billToDiscount:Double = costOfOrder - costOfSpecials
-    // apply discount to bill
+
     val discountedBill = billToDiscount * (1-card.getDiscount())
-    // + sum of bill specials
+
     val discountedBillWithSpecials = discountedBill + costOfSpecials
-    // add star?
-    try{card.addStar(costOfOrder)}
-    // return new bill price
-    //discountedBillWithSpecials
+    card.addStar(costOfOrder)
+
+    // Output to 2dp
     "%.2f".format(discountedBillWithSpecials).toDouble
   }
 
   def getServiceCharge():Double={
-    // if pay service then
+
     val orderItemTypes:List[ItemType] = getOrderItemTypes()
     val serviceCharge:Double =
       if (payService){

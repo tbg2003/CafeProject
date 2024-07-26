@@ -288,5 +288,15 @@ class BillSpec extends AnyWordSpec with Matchers{
         billSpecial.getBillTotal shouldBe 70
       }
     }
+    "don't add tip to total cost" when {
+      "customer doesn't give optional tip" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = None)
+        billSpecial.getBillTotal shouldBe 65
+      }
+      "customer gives negative tip" in {
+        val billSpecial: Bill = Bill(mixedOrderWithSpecial, payService = false, loyaltyCard = None, extraTip = Some(-5))
+        billSpecial.getBillTotal shouldBe 65
+      }
+    }
   }
 }
