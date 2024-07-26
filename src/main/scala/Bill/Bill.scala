@@ -5,6 +5,7 @@ import MenuStuff.ItemType.{ColdDrink, HotDrink}
 import MenuStuff.{ItemType, MenuItem}
 import Utils.CurrencyType
 
+import java.time.LocalDateTime
 import scala.annotation.tailrec
 import scala.collection.mutable.ListBuffer
 
@@ -44,13 +45,40 @@ case class Bill(
     }
     helpSumBill(order)
   }
-// BIG ONE
-  def getBillTotal:Double = {
-    val billDiscounted:Double = loyaltyCard match {
-      case Some(card:DrinksLoyaltyCard) => applyDrinksLoyalty(card)
-      case Some(card:DiscountLoyaltyCard) => applyDiscountLoyalty(card)
-      case None => sumUpBill()
+
+  def isHappyHour(currentTime:LocalDateTime = LocalDateTime.now()):Boolean = {
+    val hourNow:Int = currentTime.getHour
+    hourNow == 18
+  }
+  def applyHappyHourDiscount():Double = {
+    val drinksList:List[MenuItem] = getOrderDrinks(order)
+    val drinksTotal:Double = drinksList.map(_.price).sum
+    val discountedDrinksTotal:Double = drinksTotal * 0.5
+
+
+    val notDrinksList:List[MenuItem] = removeDrinksFromOrder(order)
+    val notDrinksTotal:Double = notDrinksList.map(_.price).sum
+
+    val notDrinksDiscounted:Double = loyaltyCard match {
+      case Some(card:DrinksLoyaltyCard) => notDrinksTotal
+      case Some(card:DiscountLoyaltyCard) => applyDiscountOnFood(card, notDrinksTotal)
+      case None => notDrinksTotal
     }
+    discountedDrinksTotal + notDrinksDiscounted
+  }
+
+  def applyDiscounts(currentTime:LocalDateTime):Double = {
+    if (isHappyHour(currentTime)) applyHappyHourDiscount()
+    else
+      loyaltyCard match {
+        case Some(card:DrinksLoyaltyCard) => applyDrinksLoyalty(card)
+        case Some(card:DiscountLoyaltyCard) => applyDiscountLoyalty(card)
+        case None => sumUpBill()
+      }
+  }
+// BIG ONE
+  def getBillTotal(currentTime:LocalDateTime):Double = {
+    val billDiscounted:Double = applyDiscounts(currentTime)
     val billWithService:Double = billDiscounted * getServiceCharge()
     val billTotal:Double = extraTip match {
       case Some(tip) => if (tip > 0){billWithService + tip} else billWithService
@@ -66,10 +94,17 @@ case class Bill(
       case Right(value) => true
     }
   }
+  def removeDrinksFromOrder(orderWithDrinks:List[MenuItem]):List[MenuItem] = {
+    orderWithDrinks.filterNot(_.itemType == ColdDrink).filterNot(_.itemType == HotDrink)
+  }
+
+  def getOrderDrinks(order:List[MenuItem]):List[MenuItem] = {
+    val listNotDrinks:List[MenuItem] = removeDrinksFromOrder(order)
+    order.diff(listNotDrinks)
+  }
 
   def removeCheapestDrinkCost(billToDiscount:Double):Double = {
-    val listNotDrinks:List[MenuItem] = order.filterNot(_.itemType == ColdDrink).filterNot(_.itemType == HotDrink)
-    val listDrinks:List[MenuItem] = order.diff(listNotDrinks)
+    val listDrinks:List[MenuItem] = getOrderDrinks(order)
     val discountedBill:Double = {
       if (listDrinks.nonEmpty) {
         val cheapestDrinkCost: Double = listDrinks.minBy(_.price).price
@@ -106,6 +141,17 @@ case class Bill(
 
     val discountedBillWithSpecials = discountedBill + costOfSpecials
     card.addStar(costOfOrder)
+
+    // Output to 2dp
+    "%.2f".format(discountedBillWithSpecials).toDouble
+  }
+
+  def applyDiscountOnFood(card: DiscountLoyaltyCard, notDrinksTotal:Double):Double = {
+    val costOfSpecials:Double = sumUpBillSpecials()
+    val billToDiscount:Double = notDrinksTotal - costOfSpecials
+    val discountedBill = billToDiscount * (1-card.getDiscount())
+    val discountedBillWithSpecials = discountedBill + costOfSpecials
+    card.addStar(notDrinksTotal)
 
     // Output to 2dp
     "%.2f".format(discountedBillWithSpecials).toDouble
