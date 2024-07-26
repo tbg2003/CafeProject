@@ -42,6 +42,7 @@ class DrinksLoyaltyCardSpec extends AnyWordSpec with Matchers{
       }
     }
   }
+
   "checkEnoughStamps" should {
     "Return a Right" when {
       "Loyalty Card has 10 stamps" in {
@@ -59,6 +60,7 @@ class DrinksLoyaltyCardSpec extends AnyWordSpec with Matchers{
     }
 
   }
+
   "getFreeDrink" should {
     "return Left" when {
       "stamp has already been stamped today" in {

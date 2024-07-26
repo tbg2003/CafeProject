@@ -38,13 +38,13 @@ class DiscountLoyaltyCardSpec extends AnyWordSpec with Matchers {
     "Return an empty List" when {
       "the list length is negative  " in {
         val emptyDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard.apply(Some(List()))
-        emptyDiscountLoyaltyCard.getCustomersCard() shouldBe (Some(List()))
+        emptyDiscountLoyaltyCard.getCustomersCard() shouldBe List()
       }
     }
     "Return an None List" when {
       "the customer stars is None " in {
         val noneParameterDiscountLoyaltyCard: DiscountLoyaltyCard = DiscountLoyaltyCard.apply(None)
-        noneParameterDiscountLoyaltyCard.getCustomersCard() shouldBe (None)
+        noneParameterDiscountLoyaltyCard.getCustomersCard() shouldBe List()
       }
     }
     "Return an Non-Empty List" when {
@@ -82,16 +82,16 @@ class DiscountLoyaltyCardSpec extends AnyWordSpec with Matchers {
   }
 
   "getDiscount" should {
-    "return 0" in {
+    "return 0 when 0 stars on card" in {
       emptyStampDiscountLoyaltyCard.getDiscount() shouldBe 0
     }
-    "return 0.04" in {
+    "return 0.04 when 2 stars on card" in {
       twoStampDiscountLoyaltyCard.getDiscount() shouldBe 0.04
     }
-    "return 0.08 " in {
+    "return 0.08 when 4 stars on card" in {
       fourStampDiscountLoyaltyCard.getDiscount() shouldBe 0.08
     }
-    "return 0.16" in {
+    "return 0.16 when 8 stars on card" in {
       eightStampedDiscountLoyaltyCard.getDiscount() shouldBe 0.16
     }
   }

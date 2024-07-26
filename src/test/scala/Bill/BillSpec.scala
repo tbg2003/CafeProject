@@ -191,9 +191,6 @@ class BillSpec extends AnyWordSpec with Matchers{
     }
   }
 
-
-
-
   "getBillTotal" should {
     val ColdFood10 :MenuItem = MenuItem("Cold Food",10.00, ItemType.ColdFood)
     val HotFood10 :MenuItem = MenuItem("Hot Food", 10.00, ItemType.HotFood)
