@@ -1,4 +1,4 @@
-package Utils
+package Error
 
 sealed class CurrencyType(val conversionRate:Double){
   def convertTo(billTotal:Double):Double = {

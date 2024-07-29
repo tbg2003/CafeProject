@@ -1,7 +1,7 @@
 package LoyaltyCard
 
 import LoyaltyCard.DiscountLoyaltyCard
-import Utils.POSError.InvalidStamp
+import Error.POSError.InvalidStamp
 import org.scalatest.matchers.should.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 

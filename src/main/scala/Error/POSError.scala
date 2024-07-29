@@ -1,4 +1,4 @@
-package Utils
+package Error
 
 trait POSError {def message:String}
 
@@ -12,5 +12,6 @@ object POSError{
   case class InvalidMinSpendTotal(message:String) extends POSError
   case class InvalidRemovingCard(message:String) extends POSError
   case class InvalidServicePeriod(message:String) extends POSError
+  case class InvalidBillAmount(message:String) extends POSError
 
 }

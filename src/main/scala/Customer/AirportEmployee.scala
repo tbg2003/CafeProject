@@ -2,8 +2,8 @@ package Customer
 
 
 import LoyaltyCard.LoyaltyCard
-import Utils.POSError
-import Utils.POSError.InvalidServicePeriod
+import Error.POSError
+import Error.POSError.InvalidServicePeriod
 
 import java.time.{LocalDate, Period}
 

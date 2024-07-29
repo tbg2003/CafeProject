@@ -1,8 +1,8 @@
 package Customer
 
 import LoyaltyCard.{DiscountLoyaltyCard, DrinksLoyaltyCard, LoyaltyCard, LoyaltyCardType}
-import Utils.POSError
-import Utils.POSError.{InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal, InvalidRemovingCard}
+import Error.POSError
+import Error.POSError.{InvalidAge, InvalidMinPurchases, InvalidMinSpendTotal, InvalidRemovingCard}
 
 class Customer(id: Int,
                     fullName: String,
